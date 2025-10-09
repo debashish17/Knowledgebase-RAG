@@ -1,0 +1,217 @@
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from pydantic import BaseModel
+from typing import List, Dict, Any
+import sys
+import os
+import tempfile
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from app.services.ingestion import ingestion_service
+from app.services.embeddings import embedding_service
+from app.services.vectorstore import VectorStore
+
+router = APIRouter()
+
+class UploadResponse(BaseModel):
+    message: str
+    filename: str
+    chunks_created: int
+    collection: str
+
+@router.post("/upload", response_model=UploadResponse)
+async def upload_file(
+    file: UploadFile = File(...),
+    collection: str = Form("knowledge_base")
+) -> UploadResponse:
+    """Upload and process a document file"""
+    try:
+        # Validate file type
+        allowed_extensions = {'.pdf', '.txt', '.md'}
+        file_extension = Path(file.filename).suffix.lower()
+        
+        if file_extension not in allowed_extensions:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Unsupported file type: {file_extension}. Allowed: {', '.join(allowed_extensions)}"
+            )
+        
+        # Save uploaded file temporarily
+        with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as temp_file:
+            content = await file.read()
+            temp_file.write(content)
+            temp_file_path = temp_file.name
+        
+        try:
+            # Process the file
+            chunks = ingestion_service.process_document(temp_file_path)
+            
+            if not chunks:
+                raise HTTPException(status_code=400, detail="No content could be extracted from the file")
+            
+            # Generate embeddings and add metadata
+            texts = [chunk["text"] for chunk in chunks]
+            metadatas = []
+            for chunk in chunks:
+                metadata = chunk["metadata"].copy()
+                metadata.update({
+                    "original_filename": file.filename,
+                    "upload_collection": collection
+                })
+                metadatas.append(metadata)
+            
+            embeddings = embedding_service.embed_texts(texts, input_type="passage")
+            
+            # Store in vector database
+            vector_store = VectorStore(collection)
+            doc_ids = vector_store.add_documents(
+                texts=texts,
+                embeddings=embeddings,
+                metadatas=metadatas
+            )
+            
+            return UploadResponse(
+                message="File uploaded and processed successfully",
+                filename=file.filename,
+                chunks_created=len(chunks),
+                collection=collection
+            )
+            
+        finally:
+            # Clean up temporary file
+            os.unlink(temp_file_path)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+class MultiUploadResponse(BaseModel):
+    message: str
+    total_files: int
+    successful: int
+    failed: int
+    results: List[Dict[str, Any]]
+
+@router.post("/upload/multiple", response_model=MultiUploadResponse)
+async def upload_multiple_files(
+    files: List[UploadFile] = File(...),
+    collection: str = Form("knowledge_base")
+) -> MultiUploadResponse:
+    """Upload and process multiple document files"""
+    try:
+        allowed_extensions = {'.pdf', '.txt', '.md'}
+        results = []
+        successful = 0
+        failed = 0
+        
+        for file in files:
+            try:
+                # Validate file type
+                file_extension = Path(file.filename).suffix.lower()
+                
+                if file_extension not in allowed_extensions:
+                    results.append({
+                        "filename": file.filename,
+                        "status": "failed",
+                        "error": f"Unsupported file type: {file_extension}"
+                    })
+                    failed += 1
+                    continue
+                
+                # Save uploaded file temporarily
+                with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as temp_file:
+                    content = await file.read()
+                    temp_file.write(content)
+                    temp_file_path = temp_file.name
+                
+                try:
+                    # Process the file
+                    chunks = ingestion_service.process_document(temp_file_path)
+                    
+                    if not chunks:
+                        results.append({
+                            "filename": file.filename,
+                            "status": "failed",
+                            "error": "No content could be extracted"
+                        })
+                        failed += 1
+                        continue
+                    
+                    # Generate embeddings and add metadata
+                    texts = [chunk["text"] for chunk in chunks]
+                    metadatas = []
+                    for chunk in chunks:
+                        metadata = chunk["metadata"].copy()
+                        metadata.update({
+                            "original_filename": file.filename,
+                            "upload_collection": collection
+                        })
+                        metadatas.append(metadata)
+                    
+                    embeddings = embedding_service.embed_texts(texts, input_type="passage")
+                    
+                    # Store in vector database
+                    vector_store = VectorStore(collection)
+                    doc_ids = vector_store.add_documents(
+                        texts=texts,
+                        embeddings=embeddings,
+                        metadatas=metadatas
+                    )
+                    
+                    results.append({
+                        "filename": file.filename,
+                        "status": "success",
+                        "chunks_created": len(chunks)
+                    })
+                    successful += 1
+                    
+                finally:
+                    # Clean up temporary file
+                    os.unlink(temp_file_path)
+                    
+            except Exception as e:
+                results.append({
+                    "filename": file.filename,
+                    "status": "failed",
+                    "error": str(e)
+                })
+                failed += 1
+        
+        return MultiUploadResponse(
+            message=f"Processed {len(files)} files: {successful} successful, {failed} failed",
+            total_files=len(files),
+            successful=successful,
+            failed=failed,
+            results=results
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Batch upload failed: {str(e)}")
+
+@router.get("/collections")
+async def list_collections() -> Dict[str, Any]:
+    """List all available collections"""
+    try:
+        import chromadb
+        from chromadb.config import Settings as ChromaSettings
+        from app.config import settings
+        
+        # Initialize ChromaDB client
+        client = chromadb.PersistentClient(
+            path=settings.chroma_persist_dir,
+            settings=ChromaSettings(anonymized_telemetry=False)
+        )
+        
+        # Get all collections
+        collections = client.list_collections()
+        collection_names = [col.name for col in collections]
+        
+        return {
+            "collections": collection_names if collection_names else ["knowledge_base"],
+            "message": f"Found {len(collection_names)} collection(s)"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to list collections: {str(e)}")
