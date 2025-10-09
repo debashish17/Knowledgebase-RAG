@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # ChromaDB Vector Database (Optional - backend uses embedded mode by default)
+  # Uncomment if you want to use ChromaDB in client-server mode
+  # chromadb:
+  #   image: chromadb/chroma:latest
+  #   container_name: knerd-chromadb
+  #   ports:
+  #     - "8001:8000"
+  #   volumes:
+  #     - ./chroma_db:/chroma/chroma
+  #   environment:
+  #     - ANONYMIZED_TELEMETRY=False
+  #   networks:
+  #     - knerd-network
+  #   profiles:
+  #     - external-chroma
+
+  # MongoDB for metadata storage
+  mongodb:
+    image: mongo:7
+    container_name: knerd-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=knowledgebase
+    networks:
+      - knerd-network
+
+  # MinIO for object storage (Optional)
+  # Uncomment if you want S3-compatible object storage
+  # minio:
+  #   image: minio/minio:latest
+  #   container_name: knerd-minio
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   volumes:
+  #     - minio_data:/data
+  #   environment:
+  #     - MINIO_ROOT_USER=minioadmin
+  #     - MINIO_ROOT_PASSWORD=minioadmin
+  #   command: server /data --console-address ":9001"
+  #   networks:
+  #     - knerd-network
+  #   profiles:
+  #     - minio
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: knerd-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+      - ./uploads:/app/uploads
+      - ./chroma_db:/app/chroma_db
+    env_file:
+      - .env
+    environment:
+      - CHROMA_HOST=localhost
+      - CHROMA_PORT=8000
+      - CHROMA_PERSIST_DIR=/app/chroma_db
+      - MONGO_URI=mongodb://mongodb:27017
+      - MONGO_DB_NAME=knowledgebase
+      - UPLOAD_DIR=/app/uploads
+    depends_on:
+      - mongodb
+    networks:
+      - knerd-network
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend - React (Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: knerd-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    networks:
+      - knerd-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  # Alternative Streamlit Frontend
+  frontend-streamlit:
+    build:
+      context: ./frontend-streamlit
+      dockerfile: Dockerfile
+    container_name: knerd-frontend-streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - knerd-network
+    profiles:
+      - streamlit
+
+volumes:
+  mongodb_data:
+  minio_data:
+
+networks:
+  knerd-network:
+    driver: bridge
