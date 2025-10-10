@@ -1,392 +1,360 @@
-# 🚀 Knowledge Base RAG System
+# 🚀 Knowledgebase-RAG
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-7.0+-green.svg)](https://www.mongodb.com/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-A production-ready **Retrieval-Augmented Generation (RAG)** system for intelligent document search and question-answering using NVIDIA NIM APIs, ChromaDB vector database, and MongoDB for conversation history.
+A full-stack Retrieval-Augmented Generation (RAG) application that enables intelligent document processing and conversational Q&A using NVIDIA NIM APIs, ChromaDB, and MongoDB.
 
 ## 🎯 Overview
 
-This system provides a complete RAG solution with:
-- 📤 **Document Upload & Processing** - PDF, DOCX, TXT, and MD files
-- 🧠 **Intelligent Chunking** - Automatic text segmentation with overlap
-- 🔍 **Vector Search** - Semantic similarity search using ChromaDB
-- 💬 **LLM Integration** - NVIDIA NIM API for answer generation
-- 📊 **Conversation History** - MongoDB storage for chat sessions
-- 🎨 **Modern UI** - React frontend with shadcn/ui components
-- 🐳 **Docker Ready** - Full containerization support
+Knowledgebase-RAG combines vector search, embeddings, and large language models to create an intelligent document Q&A system. Upload documents, ask questions, and get context-aware answers powered by AI.
 
-## 🏗️ Architecture
+**Key Features:**
+- 📄 **Document Upload & Processing** - Support for PDF, DOCX, TXT, and MD files
+- 🔍 **Semantic Search** - Vector-based search using ChromaDB embeddings
+- 💬 **AI-Powered Q&A** - Context-aware answers using NVIDIA NIM LLM APIs
+- 🗄️ **Conversation History** - MongoDB storage for persistent chat sessions
+- 🎨 **Modern React UI** - Clean, responsive interface built with Vite + shadcn/ui
+- 🐳 **Docker Ready** - Full containerization with Docker Compose
 
-```
-Knowledgebase-RAG/
-├── backend/                    # FastAPI Backend
-│   ├── app/
-│   │   ├── api/               # API endpoints
-│   │   │   ├── health.py      # Health checks
-│   │   │   ├── upload.py      # File upload
-│   │   │   ├── ingest.py      # Document ingestion
-│   │   │   ├── query.py       # Search queries
-│   │   │   ├── ask.py         # RAG Q&A
-│   │   │   └── chat_history.py # Conversation management
-│   │   ├── models/            # Pydantic models
-│   │   ├── services/          # Business logic
-│   │   │   ├── ingestion.py   # Document processing
-│   │   │   ├── embeddings.py  # Vector embeddings
-│   │   │   ├── vectorstore.py # ChromaDB interface
-│   │   │   ├── llm.py         # NVIDIA NIM API
-│   │   │   └── mongodb.py     # MongoDB operations
-│   │   ├── scripts/           # Utility scripts
-│   │   ├── utils/             # Helper functions
-│   │   ├── config.py          # Configuration
-│   │   ├── deps.py            # Dependencies
-│   │   └── main.py            # App entry point
-│   ├── Dockerfile
-│   └── start.bat
-├── frontend/                   # React + Vite Frontend
-│   ├── src/
-│   │   ├── components/        # React components
-│   │   ├── lib/              # Utilities
-│   │   └── App.tsx           # Main app
-│   ├── package.json
-│   └── vite.config.ts
-├── frontend-streamlit/         # Alternative Streamlit UI
-│   ├── streamlit_app.py
-│   └── Dockerfile
-├── docker-compose.yml          # Multi-container setup
-├── requirements.txt            # Python dependencies
-├── .env.example               # Environment template
-└── README.md
-```
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework:** FastAPI (Python 3.9+)
+- **Vector Database:** ChromaDB (embedded mode)
+- **Database:** MongoDB (conversation storage)
+- **LLM API:** NVIDIA NIM (mistralai/mistral-7b-instruct)
+- **Embeddings:** NVIDIA NIM Embeddings (nv-embedqa-e5-v5)
+- **Document Processing:** PyPDF2, python-docx, langchain
+
+### Frontend
+- **Framework:** React 18 with TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS
+- **UI Components:** shadcn/ui + Radix UI
+- **State Management:** React Query (TanStack Query)
+
+### Infrastructure
+- **Containerization:** Docker & Docker Compose
+- **Development:** Hot reload for both backend and frontend
+
+## 📋 Prerequisites
+
+### Required
+- **NVIDIA NIM API Keys** - Get from [NVIDIA Build](https://build.nvidia.com/)
+  - Embeddings API key
+  - LLM API key
+
+### For Docker Setup (Recommended)
+- Docker Desktop (version 20.10+)
+- Docker Compose (version 2.0+)
+
+### For Local Development
+- Python 3.9 or higher
+- Node.js 16+ with npm
+- MongoDB 7.0+ (running locally or via Docker)
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- **Python 3.10+**
-- **Node.js 18+** (for React frontend)
-- **Docker & Docker Compose** (optional, for containerized deployment)
-- **MongoDB** (or use Docker)
-
 ### Option 1: Docker Compose (Recommended)
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/debashish17/Knowledgebase-RAG.git
-   cd Knowledgebase-RAG
-   ```
+```bash
+# 1. Clone the repository
+git clone https://github.com/debashish17/Knowledgebase-RAG.git
+cd Knowledgebase-RAG
 
-2. **Create environment file:**
-   ```bash
-   copy .env.example .env
-   # Edit .env with your NVIDIA API key and other settings
-   ```
+# 2. Configure environment
+cp .env.example .env
+# Edit .env and add your NVIDIA API keys
 
-3. **Start all services:**
-   ```bash
-   docker-compose up -d
-   ```
+# 3. Start all services
+docker-compose up -d
 
-4. **Access the application:**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:8000
-   - API Docs: http://localhost:8000/docs
-   - MongoDB: localhost:27017
+# 4. View logs (optional)
+docker-compose logs -f
+```
+
+**Access the application:**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+- MongoDB: localhost:27017
 
 ### Option 2: Local Development
 
 #### Backend Setup
 
-1. **Navigate to backend:**
-   ```powershell
-   cd backend
-   ```
+```powershell
+# Navigate to backend
+cd backend
 
-2. **Create virtual environment:**
-   ```powershell
-   python -m venv venv
-   .\venv\Scripts\activate
-   ```
+# Create virtual environment
+python -m venv venv
 
-3. **Install dependencies:**
-   ```powershell
-   pip install -r ..\requirements.txt
-   ```
+# Activate virtual environment (Windows)
+.\venv\Scripts\activate
 
-4. **Set up environment:**
-   ```powershell
-   copy .env.example .env
-   # Edit .env with your configuration
-   ```
+# Install dependencies
+pip install -r ..\requirements.txt
 
-5. **Start MongoDB (if local):**
-   ```powershell
-   # Install MongoDB or use Docker:
-   docker run -d -p 27017:27017 --name mongodb mongo:7
-   ```
+# Configure environment
+cp ..\.env.example ..\.env
+# Edit .env with your NVIDIA API keys
 
-6. **Run the backend:**
-   ```powershell
-   # Using the start script:
-   .\start.bat
-   
-   # Or manually:
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-   ```
+# Start MongoDB (if not using Docker)
+# Option A: Using Docker
+docker run -d -p 27017:27017 --name mongodb mongo:7
+
+# Option B: Using local MongoDB
+# Start MongoDB service from Services or run mongod
+
+# Start the backend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Backend runs at: http://localhost:8000
 
 #### Frontend Setup
 
-1. **Navigate to frontend:**
-   ```powershell
-   cd frontend
-   ```
-
-2. **Install dependencies:**
-   ```powershell
-   npm install
-   ```
-
-3. **Start development server:**
-   ```powershell
-   npm run dev
-   ```
-
-4. **Access the UI:**
-   - Open http://localhost:5173 in your browser
-
-## 📚 Usage
-
-### API Endpoints
-
-The FastAPI backend provides the following endpoints:
-
-#### Document Management
-- **POST** `/api/upload/` - Upload documents (PDF, DOCX, TXT, MD)
-- **POST** `/api/ingest/` - Process and embed uploaded documents
-- **GET** `/api/collections/` - List available collections
-
-#### Query & Search
-- **POST** `/api/query/` - Semantic search over documents
-- **POST** `/api/ask/` - Ask questions with RAG (retrieval + LLM)
-
-#### Chat History
-- **GET** `/api/chat-history/conversations/` - List all conversations
-- **GET** `/api/chat-history/conversations/{id}` - Get conversation by ID
-- **POST** `/api/chat-history/conversations/` - Create new conversation
-- **DELETE** `/api/chat-history/conversations/{id}` - Delete conversation
-
-#### Health & Status
-- **GET** `/health` - System health check
-- **GET** `/docs` - Interactive API documentation
-
-### Using the Web Interface
-
-1. **Upload Documents:**
-   - Click "Upload" and select PDF, DOCX, TXT, or MD files
-   - Documents are automatically processed and embedded
-
-2. **Ask Questions:**
-   - Type your question in the chat interface
-   - The system retrieves relevant context and generates answers using NVIDIA NIM
-
-3. **View Conversations:**
-   - Access conversation history
-   - Continue previous chat sessions
-   - Delete old conversations
-
-### Command Line Usage
-
-**Process documents via script:**
 ```powershell
-cd backend
-python app\scripts\preembed.py --file document.pdf --collection my_docs
+# Navigate to frontend (new terminal)
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
-**Test the pipeline:**
-```powershell
-python app\scripts\test_pipeline.py
+Frontend runs at: http://localhost:5173
+
+## 📁 Project Structure
+
+```
+Knowledgebase-RAG/
+├── backend/                    # FastAPI Backend
+│   ├── app/
+│   │   ├── api/               # API Endpoints
+│   │   │   ├── ask.py         # Q&A with RAG
+│   │   │   ├── chat_history.py # Conversation management
+│   │   │   ├── health.py      # Health checks
+│   │   │   └── upload.py      # Document upload
+│   │   ├── models/
+│   │   │   └── schemas.py     # Pydantic models
+│   │   ├── services/
+│   │   │   ├── embeddings.py  # NVIDIA embeddings
+│   │   │   ├── ingestion.py   # Document processing
+│   │   │   ├── llm_client.py  # NVIDIA LLM client
+│   │   │   ├── mongodb_service.py # MongoDB operations
+│   │   │   └── vectorstore.py # ChromaDB operations
+│   │   ├── utils/
+│   │   │   ├── logging_config.py
+│   │   │   └── prompt_builder.py
+│   │   ├── config.py          # Settings
+│   │   ├── deps.py            # Dependencies
+│   │   └── main.py            # FastAPI app
+│   ├── Dockerfile
+│   └── uploads/               # Uploaded documents
+│
+├── frontend/                  # React Frontend
+│   ├── src/
+│   │   ├── components/       # UI Components
+│   │   │   ├── ChatArea.tsx
+│   │   │   ├── ChatInput.tsx
+│   │   │   ├── MessageBubble.tsx
+│   │   │   ├── Sidebar.tsx
+│   │   │   └── ui/           # shadcn/ui components
+│   │   ├── lib/
+│   │   │   └── api.ts        # API client
+│   │   ├── pages/
+│   │   │   └── Index.tsx     # Main page
+│   │   └── App.tsx
+│   ├── package.json
+│   └── Dockerfile.dev
+│
+├── requirements.txt           # Python dependencies
+├── docker-compose.yml         # Docker orchestration
+├── .env.example              # Environment template
+├── LICENSE                   # MIT License
+└── README.md                 # This file
 ```
 
-### Supported File Types
-- PDF files (`.pdf`)
-- Word documents (`.docx`)
-- Text files (`.txt`)
-- Markdown files (`.md`)
+## 📚 Features & Usage
 
-## ⚙️ Configuration
+### 1. Document Upload
+Upload documents through the web interface or API. Supported formats: PDF, DOCX, TXT, MD.
 
-Create a `.env` file in the root directory with the following configuration:
+```bash
+POST /api/upload/
+Content-Type: multipart/form-data
+
+file: <file>
+collection_name: "my_documents"
+```
+
+### 2. Ask Questions (RAG)
+Ask questions and get AI-generated answers based on your documents.
+
+```bash
+POST /api/ask/
+Content-Type: application/json
+
+{
+  "question": "What are the main findings?",
+  "collection": "knowledge_base",
+  "n_results": 5
+}
+```
+
+**Response:**
+```json
+{
+  "question": "What are the main findings?",
+  "answer": "Based on the documents...",
+  "contexts": [...],
+  "total_contexts": 5
+}
+```
+
+### 3. Conversation History
+All conversations are automatically saved to MongoDB.
+
+```bash
+# List all conversations
+GET /api/chat-history/conversations/
+
+# Get specific conversation
+GET /api/chat-history/conversations/{conversation_id}
+
+# Delete conversation
+DELETE /api/chat-history/conversations/{conversation_id}
+```
+
+### 4. Health Check
+```bash
+GET /health
+```
+
+## 🔧 Configuration
+
+Create a `.env` file in the root directory with the following settings:
 
 ```env
-# ============================================
-# Application Settings
-# ============================================
+# Application
 ENVIRONMENT=development
 LOG_LEVEL=INFO
-CORS_ORIGINS=http://localhost:5173,http://localhost:3000
+CORS_ORIGINS=http://localhost:3000,http://localhost:8501,http://localhost:8080
 
-# ============================================
-# NVIDIA NIM API (Required for RAG)
-# ============================================
-NVIDIA_API_KEY=your_nvidia_api_key_here
-NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
-NVIDIA_MODEL=meta/llama-3.1-405b-instruct
+# NVIDIA NIM API (Required)
+NVIDIA_EMBEDDINGS_API_KEY=your_nvidia_embeddings_key
+NVIDIA_LLM_API_KEY=your_nvidia_llm_key
+NVIDIA_LLM_ENDPOINT=https://integrate.api.nvidia.com/v1
+NVIDIA_EMBED_MODEL_EN=nvidia/nv-embedqa-e5-v5
+NVIDIA_LLM_MODEL=mistralai/mistral-7b-instruct-v0.3
 
-# ============================================
-# Vector Database (ChromaDB)
-# ============================================
+# ChromaDB (Embedded Mode)
+CHROMA_PERSIST_DIR=./chroma_db
 CHROMA_HOST=localhost
 CHROMA_PORT=8000
-CHROMA_PERSIST_DIR=./chroma_db
-DEFAULT_COLLECTION_NAME=knowledge_base
 
-# ============================================
-# Embeddings
-# ============================================
-EMBEDDING_MODEL=all-MiniLM-L6-v2
-EMBEDDING_DIMENSION=384
-EMBEDDING_BATCH_SIZE=32
+# MongoDB
+MONGO_URI=mongodb://localhost:27017/
+MONGO_DB_NAME=knowledgebase
+MONGO_COLLECTION_CONVERSATIONS=conversations
 
-# ============================================
 # Document Processing
-# ============================================
 CHUNK_SIZE=1000
 CHUNK_OVERLAP=200
-MAX_FILE_SIZE=10485760  # 10MB in bytes
 
-# ============================================
-# MongoDB (Conversation History)
-# ============================================
-MONGO_URI=mongodb://localhost:27017
-MONGO_DB_NAME=knowledgebase
-MONGO_COLLECTION=conversations
-
-# ============================================
-# File Storage
-# ============================================
-UPLOAD_DIR=./uploads
-ALLOWED_EXTENSIONS=pdf,docx,txt,md
-
-# ============================================
-# Query Settings
-# ============================================
+# RAG Settings
 TOP_K_RESULTS=5
 SIMILARITY_THRESHOLD=0.7
+MAX_TOKENS=1024
+TEMPERATURE=0.7
 ```
 
-### Key Configuration Options:
+**Get your NVIDIA API keys:**
+1. Visit [NVIDIA Build](https://build.nvidia.com/)
+2. Sign in and create API keys for embeddings and LLM
+3. Add them to your `.env` file
 
-- **NVIDIA_API_KEY**: Get your API key from [NVIDIA NIM](https://build.nvidia.com/)
-- **CHUNK_SIZE**: Larger chunks (1000-2000) for general documents, smaller (500-800) for technical docs
-- **TOP_K_RESULTS**: Number of relevant chunks to retrieve (3-10 recommended)
-- **SIMILARITY_THRESHOLD**: Minimum similarity score (0.0-1.0, higher = more strict)
+## 🌐 API Endpoints
 
-## 🧪 Testing
+### Health & Status
+- `GET /health` - Health check
+- `GET /` - API information
 
-Run the test pipeline to verify everything works:
+### Document Management
+- `POST /api/upload/` - Upload and process documents
+  - Accepts: PDF, DOCX, TXT, MD
+  - Automatically chunks and creates embeddings
 
-```cmd
-python app\scripts\test_pipeline.py
+### Q&A with RAG
+- `POST /api/ask/` - Ask questions about your documents
+  - Retrieves relevant context
+  - Generates AI-powered answers
+
+### Conversation History
+- `GET /api/chat-history/conversations/` - List all conversations
+- `GET /api/chat-history/conversations/{id}` - Get conversation details
+- `POST /api/chat-history/conversations/` - Create new conversation
+- `POST /api/chat-history/conversations/{id}/messages` - Add message
+- `DELETE /api/chat-history/conversations/{id}` - Delete conversation
+
+**Interactive API Documentation:** http://localhost:8000/docs (when running)
+
+## � Docker Deployment
+
+```bash
+# Build and start all services
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Stop and remove volumes (clean slate)
+docker-compose down -v
 ```
 
-This will:
-1. Create a sample document
-2. Process it through the ingestion pipeline
-3. Generate embeddings
-4. Store in ChromaDB
-5. Perform a test search
-6. Display results and cleanup
+**Services started:**
+- MongoDB (port 27017)
+- Backend FastAPI (port 8000)
+- Frontend React (port 5173)
 
-## ✨ Features
+## 🤝 Contributing
 
-### Current Capabilities
+Contributions are welcome! Please:
 
-✅ **Document Processing**
-- Multi-format support (PDF, DOCX, TXT, MD)
-- Intelligent text chunking with overlap
-- Automatic metadata extraction
-- Batch processing support
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
 
-✅ **Vector Search**
-- ChromaDB integration
-- Semantic similarity search
-- Multi-collection support
-- Persistent storage
+## 📝 License
 
-✅ **LLM Integration**
-- NVIDIA NIM API integration
-- Context-aware answer generation
-- Streaming responses
-- Configurable models
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-✅ **Conversation Management**
-- MongoDB-backed chat history
-- Session persistence
-- Multi-turn conversations
-- Conversation deletion
+## 🆘 Troubleshooting
 
-✅ **API & Frontend**
-- FastAPI REST API
-- React UI with shadcn/ui
-- Alternative Streamlit interface
-- Interactive API documentation
-- CORS support
+### NVIDIA API Issues
+```
+Error: NVIDIA_LLM_API_KEY not found
+```
+- Ensure API keys are set in `.env` file
+- Verify keys are valid at [NVIDIA Build](https://build.nvidia.com/)
 
-✅ **DevOps**
-- Docker containerization
-- Docker Compose orchestration
-- Health checks
-- Logging and monitoring
-
-### 🎯 Roadmap
-
-- [ ] Multi-user authentication
-- [ ] Document versioning
-- [ ] Advanced filtering (date, author, tags)
-- [ ] Reranking models for better results
-- [ ] Multi-language support
-- [ ] OCR for scanned documents
-- [ ] Export conversations
-- [ ] Analytics dashboard
-- [ ] Cost tracking for API usage
-- [ ] Custom embedding models
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-**Import errors / Module not found:**
+### MongoDB Connection Failed
 ```powershell
-# Ensure virtual environment is activated
-.\venv\Scripts\activate
+# Check if MongoDB is running
+docker ps | findstr mongodb
 
-# Reinstall dependencies
-pip install -r requirements.txt
-```
-
-**MongoDB connection failed:**
-```powershell
-# Start MongoDB with Docker
+# Start MongoDB if not running
 docker run -d -p 27017:27017 --name mongodb mongo:7
-
-# Or check if MongoDB is running locally
-# Windows: services.msc -> MongoDB Service
 ```
 
-**ChromaDB persistence issues:**
-```powershell
-# Delete and recreate the database
-Remove-Item -Recurse -Force .\chroma_db
-# Restart the backend - it will recreate automatically
-```
-
-**CORS errors in frontend:**
-- Check that `CORS_ORIGINS` in `.env` includes your frontend URL
-- Default: `http://localhost:5173` for Vite dev server
-
-**Port already in use:**
+### Port Already in Use
 ```powershell
 # Backend (port 8000)
 netstat -ano | findstr :8000
@@ -397,163 +365,54 @@ netstat -ano | findstr :5173
 taskkill /PID <PID> /F
 ```
 
-**Memory issues with large PDFs:**
-- Reduce `CHUNK_SIZE` in `.env` (try 500-800)
-- Process files individually instead of batch
-- Increase Docker memory limit if using containers
-
-**NVIDIA API errors:**
-- Verify your API key at [NVIDIA NIM](https://build.nvidia.com/)
-- Check rate limits and quotas
-- Ensure `NVIDIA_MODEL` is valid
-
-### Docker Issues
-
-**Containers won't start:**
-```bash
-# Check logs
-docker-compose logs -f
-
-# Rebuild containers
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
-```
-
-**Volume permission issues:**
-```bash
-# Windows: Ensure Docker has access to the project folder
-# Settings -> Resources -> File Sharing
-```
-
-## 📝 Example Output
-
-When you run the test pipeline, you should see:
-
-```
-🚀 Testing Knowledge Base RAG Pipeline
-==================================================
-📄 Created test file: C:\temp\tmpXXX.txt
-
-1. Testing document ingestion...
-   ✅ Successfully created 8 chunks
-
-2. Testing embedding generation...
-   ✅ Generated embeddings for 3 chunks
-   📊 Embedding dimension: 384
-
-3. Testing vector store operations...
-   ✅ Added 8 documents to vector store
-
-4. Testing semantic search...
-   🔍 Query: 'How do I use the preembed script?'
-   ✅ Found 3 relevant results
-   📋 Top result (distance: 0.445):
-      To use this system, simply run the preembed script with your documents:
-
-```bash
-python preembed.py --file document.pdf
-```
-
-5. Collection Statistics:
-   📊 {'collection_name': 'test_collection', 'document_count': 8}
-
-🎉 All tests passed successfully!
-```
-
-## � Testing
-
-### Run Backend Tests
+### ChromaDB Issues
 ```powershell
-cd backend
-pytest tests/
-
-# Test specific components
-python test_mongodb.py
-python test_conversation_storage.py
-python app\scripts\test_pipeline.py
+# Reset ChromaDB (delete and recreate)
+Remove-Item -Recurse -Force .\chroma_db
+# Restart backend - it will recreate automatically
 ```
 
-### Test API Endpoints
+### Dependencies Not Installing
 ```powershell
-# Using the interactive docs
-# Navigate to http://localhost:8000/docs
+# Backend
+pip install --upgrade pip
+pip install -r requirements.txt --force-reinstall
 
-# Or use curl/Invoke-RestMethod
-Invoke-RestMethod -Uri "http://localhost:8000/health" -Method GET
+# Frontend
+npm cache clean --force
+Remove-Item -Recurse -Force node_modules
+npm install
 ```
-
-### Test Multi-Collection Support
-```powershell
-python test_multi_collection.py
-```
-
-## 📁 Project Structure
-
-```
-Knowledgebase-RAG/
-├── backend/                      # Python FastAPI Backend
-│   ├── app/
-│   │   ├── api/                 # API route handlers
-│   │   ├── models/              # Pydantic data models
-│   │   ├── services/            # Business logic
-│   │   ├── utils/               # Helper utilities
-│   │   ├── config.py            # App configuration
-│   │   ├── deps.py              # Dependency injection
-│   │   └── main.py              # FastAPI app
-│   ├── uploads/                 # Uploaded documents
-│   ├── chroma_db/              # Vector database storage
-│   └── tests/                   # Backend tests
-├── frontend/                     # React + TypeScript Frontend
-│   ├── src/
-│   │   ├── components/         # React components
-│   │   ├── lib/                # Utilities
-│   │   └── App.tsx             # Main application
-│   └── public/                 # Static assets
-├── frontend-streamlit/          # Alternative Streamlit UI
-├── docs/                        # Documentation
-├── docker-compose.yml           # Docker orchestration
-├── requirements.txt             # Python dependencies
-└── .env                         # Environment configuration
-```
-
-## 🤝 Contributing
-
-Contributions are welcome! This is a modular system designed for easy extension:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Areas for Contribution:
-- **Document Processing**: Add support for more file types (PPTX, HTML, etc.)
-- **Embeddings**: Integrate additional embedding models
-- **Search**: Implement hybrid search (keyword + semantic)
-- **UI/UX**: Enhance frontend components
-- **Testing**: Add more comprehensive tests
-- **Documentation**: Improve guides and examples
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern Python web framework
-- [ChromaDB](https://www.trychroma.com/) - Vector database
-- [NVIDIA NIM](https://build.nvidia.com/) - LLM API
-- [MongoDB](https://www.mongodb.com/) - Document database
-- [React](https://reactjs.org/) - Frontend framework
-- [shadcn/ui](https://ui.shadcn.com/) - UI components
 
 ## 📞 Support
 
-For issues, questions, or suggestions:
-- Open an issue on [GitHub](https://github.com/debashish17/Knowledgebase-RAG/issues)
-- Check the [documentation](./docs/)
+- **Issues:** [GitHub Issues](https://github.com/debashish17/Knowledgebase-RAG/issues)
+- **Documentation:** Check this README and inline code comments
+- **API Docs:** http://localhost:8000/docs (when running)
+
+## 🗺️ Roadmap
+
+Future enhancements planned:
+- [ ] User authentication and multi-user support
+- [ ] Document versioning and history
+- [ ] Advanced metadata filtering
+- [ ] Real-time collaboration
+- [ ] Export conversation history
+- [ ] Custom embedding models
+- [ ] Multi-language document support
+- [ ] Performance optimizations for large documents
+
+## � Resources
+
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [ChromaDB Documentation](https://docs.trychroma.com/)
+- [NVIDIA NIM Documentation](https://build.nvidia.com/explore/discover)
+- [React Documentation](https://react.dev/)
+- [MongoDB Documentation](https://docs.mongodb.com/)
 
 ---
 
-**Built with ❤️ for the AI community**
+**Built with ❤️ using FastAPI, React, ChromaDB, and NVIDIA NIM**
+
+**Version:** 1.0.0  
+**Last Updated:** October 2025

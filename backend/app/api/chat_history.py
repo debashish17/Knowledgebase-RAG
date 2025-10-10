@@ -146,6 +146,50 @@ async def delete_conversation(conversation_id: str):
     return {"message": "Conversation deleted successfully"}
 
 
+@router.delete("/conversations")
+async def delete_all_conversations():
+    """Delete all conversations, messages, and ChromaDB collections"""
+    if not mongodb_service.is_connected():
+        raise HTTPException(status_code=503, detail="MongoDB is not available")
+    
+    try:
+        # Import vectorstore service here to avoid circular imports
+        from app.services.vectorstore import get_vectorstore
+        
+        # Get all conversations to find their collections
+        conversations = mongodb_service.list_conversations(limit=10000)
+        collection_names = list(set([conv["collection"] for conv in conversations]))
+        
+        # Delete all ChromaDB collections
+        deleted_collections = []
+        failed_collections = []
+        
+        for collection_name in collection_names:
+            try:
+                vectorstore = get_vectorstore(collection_name)
+                vectorstore.delete_collection()
+                deleted_collections.append(collection_name)
+            except Exception as e:
+                failed_collections.append(collection_name)
+                print(f"Failed to delete ChromaDB collection {collection_name}: {e}")
+        
+        # Delete all conversations and messages from MongoDB
+        success = mongodb_service.delete_all_conversations()
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to delete all conversations from MongoDB")
+        
+        return {
+            "message": "All conversations deleted successfully",
+            "deleted_conversations": len(conversations),
+            "deleted_chromadb_collections": len(deleted_collections),
+            "failed_chromadb_collections": len(failed_collections),
+            "collections_deleted": deleted_collections
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete all conversations: {str(e)}")
+
+
 # ============================================
 # Message Endpoints
 # ============================================

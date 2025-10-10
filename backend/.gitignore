@@ -1,0 +1,20 @@
+# Test folder
+tests/
+
+# Cleanup script
+cleanup_chroma.py
+
+# Shell and batch files
+*.sh
+*.bat
+
+# Test files
+test_*.py
+*_test.py
+
+# ChromaDB
+chroma_db/
+
+# Uploads (keep .gitkeep)
+uploads/*
+!uploads/.gitkeep

@@ -12,14 +12,23 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from app.services.ingestion import ingestion_service
 from app.services.embeddings import embedding_service
 from app.services.vectorstore import VectorStore
+from app.services.llm_client import LLMClient
 
 router = APIRouter()
+
+# Initialize LLM client for title generation
+try:
+    llm_client = LLMClient()
+except Exception as e:
+    print(f"⚠️  LLM client initialization failed: {e}")
+    llm_client = None
 
 class UploadResponse(BaseModel):
     message: str
     filename: str
     chunks_created: int
     collection: str
+    suggested_title: str = ""  # LLM-generated title
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_file(
@@ -72,11 +81,16 @@ async def upload_file(
                 metadatas=metadatas
             )
             
+            # Don't generate title on upload - will be generated on first question
+            # This improves upload speed and UX
+            suggested_title = ""
+            
             return UploadResponse(
                 message="File uploaded and processed successfully",
                 filename=file.filename,
                 chunks_created=len(chunks),
-                collection=collection
+                collection=collection,
+                suggested_title=suggested_title
             )
             
         finally:
@@ -161,10 +175,12 @@ async def upload_multiple_files(
                         metadatas=metadatas
                     )
                     
+                    # Don't generate title on upload - will be generated on first question
                     results.append({
                         "filename": file.filename,
                         "status": "success",
-                        "chunks_created": len(chunks)
+                        "chunks_created": len(chunks),
+                        "suggested_title": ""
                     })
                     successful += 1
                     
@@ -201,7 +217,7 @@ async def list_collections() -> Dict[str, Any]:
         
         # Initialize ChromaDB client
         client = chromadb.PersistentClient(
-            path=settings.chroma_persist_dir,
+            path=settings.CHROMA_PERSIST_DIR,
             settings=ChromaSettings(anonymized_telemetry=False)
         )
         

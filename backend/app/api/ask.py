@@ -27,6 +27,7 @@ class AskResponse(BaseModel):
     confidence: str
     contexts: List[Dict[str, Any]]
     total_contexts: int
+    suggested_title: str = ""  # LLM-generated title on first question
 
 @router.post("/ask", response_model=AskResponse)
 async def ask_question(request: AskRequest) -> AskResponse:
@@ -176,6 +177,9 @@ async def ask_question(request: AskRequest) -> AskResponse:
         
         # 5. Save to MongoDB if conversation_id is provided
         if request.conversation_id and mongodb_service.is_connected():
+            # Check if this is the first question (conversation has no messages yet)
+            is_first_question = mongodb_service.get_message_count(request.conversation_id) == 0
+            
             # Save user message
             mongodb_service.save_message(
                 conversation_id=request.conversation_id,
@@ -197,13 +201,34 @@ async def ask_question(request: AskRequest) -> AskResponse:
                     "contexts": formatted_contexts[:3]  # Save top 3 contexts
                 }
             )
+            
+            # Generate smart title on first question for better UX
+            if is_first_question:
+                try:
+                    # Use question + answer context to generate a relevant title
+                    title_prompt = f"Question: {request.question}\nAnswer: {result['answer'][:500]}"
+                    suggested_title = llm_client.generate_title_from_content(
+                        content=title_prompt,
+                        filename=""
+                    )
+                    # Update conversation title
+                    mongodb_service.update_conversation_title(
+                        request.conversation_id,
+                        suggested_title
+                    )
+                    # Add title to response metadata for frontend to update UI
+                    result["suggested_title"] = suggested_title
+                except Exception as e:
+                    print(f"⚠️  Title generation failed: {e}")
+                    result["suggested_title"] = ""
         
         return AskResponse(
             question=request.question,
             answer=result["answer"],
             confidence=result["confidence"],
             contexts=formatted_contexts,
-            total_contexts=len(formatted_contexts)
+            total_contexts=len(formatted_contexts),
+            suggested_title=result.get("suggested_title", "")
         )
         
     except Exception as e:
