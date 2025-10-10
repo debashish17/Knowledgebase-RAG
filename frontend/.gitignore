@@ -51,3 +51,6 @@ lerna-debug.log*
 # Local development
 .vite/
 .turbo/
+
+# npm lock file (using Bun instead)
+package-lock.json
