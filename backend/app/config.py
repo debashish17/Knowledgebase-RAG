@@ -98,11 +98,8 @@ class Settings(BaseSettings):
     DEFAULT_LANGUAGE: str = "en"
     
     # ============================================
-    # Embedding Configuration
+    # Embedding Configuration (NVIDIA NIM Only)
     # ============================================
-    EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
-    EMBEDDING_DIMENSION: int = 384
-    EMBEDDING_PROVIDER: str = "sentence-transformers"
     NVIDIA_EMBEDDING_DIMENSION: int = 1024
     
     class Config:
@@ -110,19 +107,7 @@ class Settings(BaseSettings):
         case_sensitive = True  # Must match environment variable names exactly
         extra = "allow"  # Allow extra fields for flexibility
     
-    # Property accessors for backward compatibility with lowercase names
-    @property
-    def embedding_model(self) -> str:
-        return self.EMBEDDING_MODEL
-    
-    @property
-    def embedding_dimension(self) -> int:
-        return self.EMBEDDING_DIMENSION
-    
-    @property
-    def embedding_provider(self) -> str:
-        return self.EMBEDDING_PROVIDER
-    
+    # Property accessors for backward compatibility
     @property
     def nvidia_embedding_model(self) -> str:
         return self.NVIDIA_EMBED_MODEL_EN
