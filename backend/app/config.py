@@ -64,7 +64,6 @@ class Settings(BaseSettings):
     # Storage Configuration
     # ============================================
     MAX_UPLOAD_SIZE_MB: int = 50
-    
     # Note: File uploads use tempfile for automatic cleanup
     # Files are processed and stored in ChromaDB, then temp files are deleted
     
@@ -134,4 +133,4 @@ if not settings.CHROMA_PERSIST_DIR or settings.CHROMA_PERSIST_DIR in ['None', 'n
 
 # Ensure ChromaDB directory exists
 os.makedirs(settings.CHROMA_PERSIST_DIR, exist_ok=True)
-os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+# os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
