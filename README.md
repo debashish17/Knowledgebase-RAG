@@ -189,45 +189,10 @@ Knowledgebase-RAG/
 │   ├── tailwind.config.ts    # Tailwind CSS config
 │   └── tsconfig.json         # TypeScript config
 ├── docker-compose.yml         # Multi-container setup
-├── README.md                  # Project documentation
-└── LICENSE                    # MIT License
-│   │   │   └── schemas.py     # Pydantic models
-│   │   ├── services/
-│   │   │   ├── embeddings.py  # NVIDIA embeddings
-│   │   │   ├── ingestion.py   # Document processing
-│   │   │   ├── llm_client.py  # NVIDIA LLM client
-│   │   │   ├── mongodb_service.py # MongoDB operations
-│   │   │   └── vectorstore.py # ChromaDB operations
-│   │   ├── utils/
-│   │   │   ├── logging_config.py
-│   │   │   └── prompt_builder.py
-│   │   ├── config.py          # Settings
-│   │   ├── deps.py            # Dependencies
-│   │   └── main.py            # FastAPI app
-│   ├── Dockerfile
-│   └── uploads/               # Uploaded documents
-│
-├── frontend/                  # React Frontend
-│   ├── src/
-│   │   ├── components/       # UI Components
-│   │   │   ├── ChatArea.tsx
-│   │   │   ├── ChatInput.tsx
-│   │   │   ├── MessageBubble.tsx
-│   │   │   ├── Sidebar.tsx
-│   │   │   └── ui/           # shadcn/ui components
-│   │   ├── lib/
-│   │   │   └── api.ts        # API client
-│   │   ├── pages/
-│   │   │   └── Index.tsx     # Main page
-│   │   └── App.tsx
-│   ├── package.json
-│   └── Dockerfile.dev
-│
-├── requirements.txt           # Python dependencies
-├── docker-compose.yml         # Docker orchestration
-├── .env.example              # Environment template
-├── LICENSE                   # MIT License
-└── README.md                 # This file
+├── .env.example              # Environment variables template  
+├── .gitignore               # Git ignore patterns
+├── LICENSE                  # MIT License
+└── README.md               # Project documentation
 ```
 
 ## 📚 Features & Usage
