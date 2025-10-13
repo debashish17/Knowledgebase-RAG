@@ -1,6 +1,16 @@
 # 🚀 Knowledgebase-RAG
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Access_Here-brightgreen?style=for-the-badge&logo=render)](https://knowledgebase-rag.onrender.com/)
+
+> **🌐 Try it now:** [knowledgebase-rag.onrender.com](https://knowledgebase-rag.onrender.com/)
+
 A full-stack Retrieval-Augmented Generation (RAG) application that enables intelligent document processing and conversational Q&A using NVIDIA NIM APIs, ChromaDB, and MongoDB.
+
+## 📸 Screenshots
+
+| Chat Interface | Base Chat |
+|---|---|
+| ![Chat Interface](assets/chatinterface.png) | ![Base Chat](assets/basechat.png) |
 
 ## 🎯 Overview
 
@@ -130,6 +140,9 @@ Frontend runs at: http://localhost:5173
 
 ```
 Knowledgebase-RAG/
+├── assets/                     # Project screenshots
+│   ├── basechat.png           # Base chat interface
+│   └── chatinterface.png      # Main chat interface
 ├── backend/                    # FastAPI Backend
 │   ├── app/
 │   │   ├── api/               # API Endpoints
@@ -137,7 +150,47 @@ Knowledgebase-RAG/
 │   │   │   ├── chat_history.py # Conversation management
 │   │   │   ├── health.py      # Health checks
 │   │   │   └── upload.py      # Document upload
-│   │   ├── models/
+│   │   ├── models/            # Pydantic schemas
+│   │   │   └── schemas.py     # Request/response models
+│   │   ├── services/          # Core business logic
+│   │   │   ├── embeddings.py  # NVIDIA embedding service
+│   │   │   ├── ingestion.py   # Document processing
+│   │   │   ├── llm_client.py  # NVIDIA LLM client
+│   │   │   ├── mongodb_service.py # MongoDB operations
+│   │   │   └── vectorstore.py # ChromaDB operations
+│   │   ├── utils/             # Utilities
+│   │   │   ├── logging_config.py # Logging setup
+│   │   │   └── prompt_builder.py # Prompt templates
+│   │   ├── config.py          # Configuration settings
+│   │   ├── deps.py            # Dependency injection
+│   │   └── main.py            # FastAPI application
+│   ├── chroma_db/             # ChromaDB storage
+│   ├── uploads/               # Uploaded documents
+│   ├── requirements.txt       # Python dependencies
+│   ├── Dockerfile            # Backend Docker config
+│   └── .env.example          # Environment variables template
+├── frontend/                   # React Frontend
+│   ├── src/
+│   │   ├── components/        # React components
+│   │   │   ├── ui/           # shadcn/ui components
+│   │   │   ├── ChatArea.tsx  # Main chat interface
+│   │   │   ├── ChatInput.tsx # Message input
+│   │   │   ├── MessageBubble.tsx # Chat messages
+│   │   │   └── Sidebar.tsx   # Navigation sidebar
+│   │   ├── lib/              # Utilities
+│   │   │   ├── api.ts        # API client
+│   │   │   └── utils.ts      # Helper functions
+│   │   ├── pages/            # Page components
+│   │   │   └── Index.tsx     # Main page
+│   │   ├── App.tsx           # Root component
+│   │   └── main.tsx          # Entry point
+│   ├── package.json          # Node.js dependencies
+│   ├── vite.config.ts        # Vite configuration
+│   ├── tailwind.config.ts    # Tailwind CSS config
+│   └── tsconfig.json         # TypeScript config
+├── docker-compose.yml         # Multi-container setup
+├── README.md                  # Project documentation
+└── LICENSE                    # MIT License
 │   │   │   └── schemas.py     # Pydantic models
 │   │   ├── services/
 │   │   │   ├── embeddings.py  # NVIDIA embeddings
