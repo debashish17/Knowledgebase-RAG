@@ -31,13 +31,6 @@ class ChromaDBClient:
                         port=settings.CHROMA_PORT
                     )
                     logger.info(f"Connected to remote ChromaDB at {settings.CHROMA_HOST}:{settings.CHROMA_PORT}")
-                else:
-                    # Local persistent ChromaDB
-                    cls._instance = chromadb.PersistentClient(
-                        path=settings.CHROMA_PERSIST_DIR,
-                        settings=Settings(anonymized_telemetry=False)
-                    )
-                    logger.info(f"Connected to local ChromaDB at {settings.CHROMA_PERSIST_DIR}")
             except Exception as e:
                 logger.error(f"Failed to connect to ChromaDB: {e}")
                 raise
@@ -80,7 +73,11 @@ class MongoDBClient:
 # Dependency functions for FastAPI
 def get_chroma_client() -> chromadb.Client:
     """Get ChromaDB client for dependency injection"""
-    return ChromaDBClient.get_client()
+    # ChromaDB local storage logic removed. Use cloud client from vectorstore.py if needed.
+    return chromadb.HttpClient(
+        host=settings.CHROMA_HOST,
+        port=settings.CHROMA_PORT
+    )
 
 
 def get_mongo_db() -> Optional[Database]:

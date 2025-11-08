@@ -138,12 +138,27 @@ async def delete_conversation(conversation_id: str):
     if not mongodb_service.is_connected():
         raise HTTPException(status_code=503, detail="MongoDB is not available")
     
+    # First, get the conversation to find its collection name
+    conversation = mongodb_service.get_conversation(conversation_id)
+    if not conversation:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    # Delete from MongoDB
     success = mongodb_service.delete_conversation(conversation_id)
-    
     if not success:
         raise HTTPException(status_code=404, detail="Conversation not found or deletion failed")
-    
-    return {"message": "Conversation deleted successfully"}
+
+    # Delete the entire ChromaDB collection for this conversation
+    try:
+        from app.services.vectorstore import VectorStore
+        collection_name = conversation["collection"]
+        vector_store = VectorStore(collection_name)
+        vector_store.delete_collection()
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Failed to delete ChromaDB collection: {e}")
+
+    return {"message": "Conversation deleted from MongoDB and ChromaDB collection successfully"}
 
 
 @router.delete("/conversations")
@@ -154,31 +169,36 @@ async def delete_all_conversations():
     
     try:
         # Import vectorstore service here to avoid circular imports
-        from app.services.vectorstore import get_vectorstore
-        
-        # Get all conversations to find their collections
+        from app.services.vectorstore import VectorStore
+
+        # Get all conversations to find their collections and ids
         conversations = mongodb_service.list_conversations(limit=10000)
-        collection_names = list(set([conv["collection"] for conv in conversations]))
-        
-        # Delete all ChromaDB collections
+        collection_map = {}
+        for conv in conversations:
+            collection_map.setdefault(conv["collection"], []).append(conv["_id"])
+
         deleted_collections = []
         failed_collections = []
-        
-        for collection_name in collection_names:
+
+        # For each collection, delete the entire ChromaDB collection
+        BASE_COLLECTION_NAME = "knowledge_base"
+        for collection_name in collection_map.keys():
+            if collection_name == BASE_COLLECTION_NAME:
+                continue  # Skip deleting the base collection
             try:
-                vectorstore = get_vectorstore(collection_name)
-                vectorstore.delete_collection()
+                vector_store = VectorStore(collection_name)
+                vector_store.delete_collection()
                 deleted_collections.append(collection_name)
             except Exception as e:
                 failed_collections.append(collection_name)
                 print(f"Failed to delete ChromaDB collection {collection_name}: {e}")
-        
+
         # Delete all conversations and messages from MongoDB
         success = mongodb_service.delete_all_conversations()
-        
+
         if not success:
             raise HTTPException(status_code=500, detail="Failed to delete all conversations from MongoDB")
-        
+
         return {
             "message": "All conversations deleted successfully",
             "deleted_conversations": len(conversations),

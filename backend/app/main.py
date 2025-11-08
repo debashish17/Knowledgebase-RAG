@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 """
 Main FastAPI application entry point.
 Includes all API routes and service initialization.
@@ -25,9 +27,9 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Manage application lifespan (startup/shutdown)"""
     # Startup
-    logger.info("🚀 Starting Knowledge Base RAG API")
+    logger.info("Starting Knowledge Base RAG API")
     logger.info(f"   Environment: {settings.ENVIRONMENT}")
-    logger.info(f"   ChromaDB: {settings.CHROMA_HOST}:{settings.CHROMA_PORT}")
+    logger.info(f"   Chroma Cloud: tenant={settings.CHROMA_TENANT}, database={settings.CHROMA_DATABASE}")
     
     yield
     

@@ -239,7 +239,7 @@ export const ChatArea = forwardRef<ChatAreaRef, ChatAreaProps>(
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Knowledge Base Chat</h2>
+              <h2 className="text-2xl font-bold text-foreground">AI Study Buddy</h2>
               <p className="text-sm text-muted-foreground mt-1">
                 Ask questions about your uploaded documents
               </p>

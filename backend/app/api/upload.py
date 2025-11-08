@@ -81,10 +81,13 @@ async def upload_file(
                 metadatas=metadatas
             )
             
-            # Don't generate title on upload - will be generated on first question
-            # This improves upload speed and UX
-            suggested_title = ""
-            
+            # Generate title from document text using Gemini
+            from app.services.llm_client import LLMClient
+            llm_client = LLMClient()
+            # Use the first 2000 characters of the document for title generation
+            document_text = "\n".join(texts)[:2000]
+            suggested_title = llm_client.generate_title_from_context(document_text, file.filename)
+
             return UploadResponse(
                 message="File uploaded and processed successfully",
                 filename=file.filename,
@@ -209,22 +212,12 @@ async def upload_multiple_files(
 
 @router.get("/collections")
 async def list_collections() -> Dict[str, Any]:
-    """List all available collections"""
+    """List all available collections from Chroma Cloud"""
     try:
-        import chromadb
-        from chromadb.config import Settings as ChromaSettings
-        from app.config import settings
-        
-        # Initialize ChromaDB client
-        client = chromadb.PersistentClient(
-            path=settings.CHROMA_PERSIST_DIR,
-            settings=ChromaSettings(anonymized_telemetry=False)
-        )
-        
-        # Get all collections
+        from app.services.vectorstore import get_chroma_client
+        client = get_chroma_client()
         collections = client.list_collections()
         collection_names = [col.name for col in collections]
-        
         return {
             "collections": collection_names if collection_names else ["knowledge_base"],
             "message": f"Found {len(collection_names)} collection(s)"

@@ -1,418 +1,386 @@
-# 🚀 Knowledgebase-RAG
+<div align="center">
 
-A full-stack Retrieval-Augmented Generation (RAG) application that enables intelligent document processing and conversational Q&A using NVIDIA NIM APIs, ChromaDB, and MongoDB.
+# 📚 Knowledgebase RAG
 
-## 🎯 Overview
+### 🤖 Chat with Your Documents Using AI
 
-Knowledgebase-RAG combines vector search, embeddings, and large language models to create an intelligent document Q&A system. Upload documents, ask questions, and get context-aware answers powered by AI.
+*Transform your documents into an interactive knowledge base powered by advanced RAG technology*
 
-**Key Features:**
-- 📄 **Document Upload & Processing** - Support for PDF, DOCX, TXT, and MD files
-- 🔍 **Semantic Search** - Vector-based search using ChromaDB embeddings
-- 💬 **AI-Powered Q&A** - Context-aware answers using NVIDIA NIM LLM APIs
-- 🗄️ **Conversation History** - MongoDB storage for persistent chat sessions
-- 🎨 **Modern React UI** - Clean, responsive interface built with Vite + shadcn/ui
-- 🐳 **Docker Ready** - Full containerization with Docker Compose
+[![GitHub stars](https://img.shields.io/github/stars/yourusername/knowledgebase-rag?style=for-the-badge&logo=github&color=ff6b35)](https://github.com/yourusername/knowledgebase-rag/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.8+-green?style=for-the-badge&logo=python)](https://www.python.org/)
+[![React](https://img.shields.io/badge/React-18+-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 
-## 🛠️ Tech Stack
+[🚀 Try Live Demo](https://your-deployed-website.com) • [🚀 Quick Start](#-quick-start) • [📚 Documentation](#-documentation) • [💬 Community](#-community)
 
-### Backend
-- **Framework:** FastAPI (Python 3.9+)
-- **Vector Database:** ChromaDB (embedded mode)
-- **Database:** MongoDB (conversation storage)
-- **LLM API:** NVIDIA NIM (mistralai/mistral-7b-instruct)
-- **Embeddings:** NVIDIA NIM Embeddings (nv-embedqa-e5-v5)
-- **Document Processing:** PyPDF2, python-docx, langchain
+</div>
 
-### Frontend
-- **Framework:** React 18 with TypeScript
-- **Build Tool:** Vite
-- **Styling:** Tailwind CSS
-- **UI Components:** shadcn/ui + Radix UI
-- **State Management:** React Query (TanStack Query)
+---
 
-### Infrastructure
-- **Containerization:** Docker & Docker Compose
-- **Development:** Hot reload for both backend and frontend
+## 🌐 Live Demo
 
-## 📋 Prerequisites
+<div align="center">
 
-### Required
-- **NVIDIA NIM API Keys** - Get from [NVIDIA Build](https://build.nvidia.com/)
-  - Embeddings API key
-  - LLM API key
+**[🚀 Try Knowledgebase RAG Now](https://your-deployed-website.com)**
 
-### For Docker Setup (Recommended)
-- Docker Desktop (version 20.10+)
-- Docker Compose (version 2.0+)
+Experience the power of AI-driven document conversations. Upload your documents and start asking questions!
 
-### For Local Development
-- Python 3.9 or higher
-- Node.js 16+ with npm
-- MongoDB 7.0+ (running locally or via Docker)
+</div>
+
+## 🎯 What is Knowledgebase RAG?
+
+Knowledgebase RAG is an intelligent **AI-powered document assistant** that uses Retrieval-Augmented Generation (RAG) to enable natural conversations with your documents. Upload PDFs or DOCX files and get accurate, contextual answers powered by cutting-edge AI models! Built with a modern React + TypeScript frontend and FastAPI backend. ✨
+
+## 🌟 Key Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 📄 **Multi-Format Support**
+- **PDF Processing** with PyPDF2
+- **DOCX Processing** with python-docx
+- Smart text extraction & chunking
+
+### 🧠 **Advanced AI Stack**
+- **NVIDIA Embedding API** for vector generation
+- **Google Gemini LLM** for answer generation
+- Context-aware responses
+
+</td>
+<td width="50%">
+
+### 💾 **Cloud-Native Storage**
+- **ChromaDB Cloud** for vector embeddings
+- **MongoDB Atlas** for chat history
+- Scalable and persistent
+
+### 🔍 **Semantic Search**
+- Lightning-fast document retrieval
+- Context-aware chunking
+- Conversational memory
+- Session management
+
+</td>
+</tr>
+</table>
 
 ## 🚀 Quick Start
 
-### Option 1: Docker Compose (Recommended)
+### Prerequisites
+
+Before you begin, ensure you have:
+- 🐍 **Python 3.8+** installed
+- 📦 **Node.js 18+** installed
+- 🔑 **API Keys** (NVIDIA, Google Gemini)
+- ☁️ **Cloud Accounts** (ChromaDB Cloud, MongoDB Atlas)
+
+### Installation
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/debashish17/Knowledgebase-RAG.git
-cd Knowledgebase-RAG
+# 1️⃣ Clone the repository
+git clone https://github.com/yourusername/knowledgebase-rag.git
+cd knowledgebase-rag
 
-# 2. Configure environment
-cp .env.example .env
-# Edit .env and add your NVIDIA API keys
-
-# 3. Start all services
-docker-compose up -d
-
-# 4. View logs (optional)
-docker-compose logs -f
-```
-
-**Access the application:**
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
-- MongoDB: localhost:27017
-
-### Option 2: Local Development
-
-#### Backend Setup
-
-```powershell
-# Navigate to backend
+# 2️⃣ Backend Setup
 cd backend
-
-# Create virtual environment
 python -m venv venv
 
-# Activate virtual environment (Windows)
-.\venv\Scripts\activate
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
 
-# Install dependencies
-pip install -r ..\requirements.txt
+# Install backend dependencies
+pip install -r requirements.txt
 
-# Configure environment
-cp ..\.env.example ..\.env
-# Edit .env with your NVIDIA API keys
+# 3️⃣ Configure environment variables
+cp .env.example .env
+# Edit .env file with your API keys and connection strings
 
-# Start MongoDB (if not using Docker)
-# Option A: Using Docker
-docker run -d -p 27017:27017 --name mongodb mongo:7
-
-# Option B: Using local MongoDB
-# Start MongoDB service from Services or run mongod
-
-# Start the backend
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-Backend runs at: http://localhost:8000
-
-#### Frontend Setup
-
-```powershell
-# Navigate to frontend (new terminal)
-cd frontend
-
-# Install dependencies
+# 4️⃣ Frontend Setup
+cd ../frontend
 npm install
 
-# Start development server
+# 5️⃣ Start the development servers
+# Terminal 1 - Backend
+cd backend
+uvicorn main:app --reload
+
+# Terminal 2 - Frontend (in another terminal)
+cd frontend
 npm run dev
 ```
 
-Frontend runs at: http://localhost:5173
+### 🎉 Launch
+
+- **Backend:** Open `http://localhost:8000`
+- **Frontend:** Open `http://localhost:5173`
+
+That's it! Start chatting with your documents! 🚀
+
+## 🔑 API & Service Setup
+
+<details>
+<summary><b>🟢 NVIDIA Embedding API</b></summary>
+
+1. Visit [build.nvidia.com](https://build.nvidia.com/)
+2. Sign up for a free account
+3. Navigate to API Keys section
+4. Generate your embedding API key
+5. Add to `.env`: `NVIDIA_API_KEY=your_key_here`
+
+**Used for:** Generating high-quality vector embeddings
+</details>
+
+<details>
+<summary><b>🔵 Google Gemini API</b></summary>
+
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create or sign in to your Google account
+3. Generate your Gemini API key
+4. Add to `.env`: `GEMINI_API_KEY=your_key_here`
+
+**Used for:** Natural language answer generation
+</details>
+
+<details>
+<summary><b>🟣 ChromaDB Cloud</b></summary>
+
+1. Visit [ChromaDB Cloud](https://www.trychroma.com/)
+2. Sign up for an account
+3. Create a new collection
+4. Get your connection credentials
+5. Add to `.env`: `CHROMADB_URL=your_url_here`
+
+**Used for:** Storing and querying vector embeddings
+</details>
+
+<details>
+<summary><b>🟤 MongoDB Atlas</b></summary>
+
+1. Visit [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free cluster
+3. Set up database user and IP whitelist
+4. Get your connection string
+5. Add to `.env`: `MONGODB_URI=your_connection_string`
+
+**Used for:** Persisting chat history and conversations
+</details>
+
+## 📚 Documentation
+
+### 🏗️ Architecture Overview
+
+```mermaid
+graph TD
+    A[📄 Upload Document] --> B[📝 Parse Document]
+    B --> C[✂️ Text Chunking]
+    C --> D[🔢 NVIDIA Embeddings]
+    D --> E[💾 ChromaDB Cloud]
+    F[❓ User Query] --> G[🔍 Semantic Search]
+    G --> E
+    E --> H[📋 Retrieve Chunks]
+    H --> I[🤖 Gemini LLM]
+    I --> J[💬 Generated Answer]
+    J --> K[💾 MongoDB Atlas]
+    K --> L[📊 Chat History]
+```
+
+### 🔄 How It Works
+
+**1. Document Processing**
+- Documents (PDF/DOCX) are uploaded through the React interface
+- FastAPI backend receives and processes files
+- PyPDF2 or python-docx extracts text content
+- Text is split into semantic chunks for better context
+
+**2. Embedding & Storage**
+- Each chunk is converted to vectors using NVIDIA Embedding API
+- Vectors are stored in ChromaDB Cloud with metadata
+- Enables fast semantic similarity search
+
+**3. Query & Retrieval**
+- User questions are submitted via React frontend
+- FastAPI backend embeds questions using NVIDIA API
+- Semantic search finds most relevant document chunks
+- Context is passed to Gemini for answer generation
+
+**4. Conversation Management**
+- All interactions are saved to MongoDB Atlas
+- Chat history maintains context across sessions
+- Users can access previous conversations
+- Real-time updates via FastAPI WebSocket connections
+
+### 🎯 Use Cases
+
+| Use Case | Description | Perfect For |
+|----------|-------------|-------------|
+| 📖 **Research Assistant** | Query research papers & documents | Researchers, Students |
+| 📋 **Document Analysis** | Extract insights from reports | Business Analysts |
+| 🏢 **Knowledge Base** | Company documentation Q&A | Enterprises, Teams |
+| 📚 **Study Helper** | Interactive learning from textbooks | Students, Educators |
+| ⚖️ **Legal Research** | Query legal documents & contracts | Lawyers, Paralegals |
+
+### 🔧 Technology Stack
+
+<div align="center">
+
+| Category | Technologies |
+|----------|-------------|
+| **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) |
+| **Backend** | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white) ![Uvicorn](https://img.shields.io/badge/Uvicorn-2C2D72?style=flat&logo=gunicorn&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white) |
+| **Document Parsing** | ![PyPDF2](https://img.shields.io/badge/PyPDF2-FF6B6B?style=flat&logo=adobe-acrobat-reader&logoColor=white) ![python-docx](https://img.shields.io/badge/python--docx-2B579A?style=flat&logo=microsoft-word&logoColor=white) |
+| **AI & Embeddings** | ![NVIDIA](https://img.shields.io/badge/NVIDIA_API-76B900?style=flat&logo=nvidia&logoColor=white) ![Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=flat&logo=google&logoColor=white) |
+| **Databases** | ![ChromaDB](https://img.shields.io/badge/ChromaDB_Cloud-FF6B35?style=flat&logo=databricks&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB_Atlas-47A248?style=flat&logo=mongodb&logoColor=white) |
+
+</div>
 
 ## 📁 Project Structure
 
 ```
-Knowledgebase-RAG/
-├── backend/                    # FastAPI Backend
-│   ├── app/
-│   │   ├── api/               # API Endpoints
-│   │   │   ├── ask.py         # Q&A with RAG
-│   │   │   ├── chat_history.py # Conversation management
-│   │   │   ├── health.py      # Health checks
-│   │   │   └── upload.py      # Document upload
-│   │   ├── models/
-│   │   │   └── schemas.py     # Pydantic models
-│   │   ├── services/
-│   │   │   ├── embeddings.py  # NVIDIA embeddings
-│   │   │   ├── ingestion.py   # Document processing
-│   │   │   ├── llm_client.py  # NVIDIA LLM client
-│   │   │   ├── mongodb_service.py # MongoDB operations
-│   │   │   └── vectorstore.py # ChromaDB operations
-│   │   ├── utils/
-│   │   │   ├── logging_config.py
-│   │   │   └── prompt_builder.py
-│   │   ├── config.py          # Settings
-│   │   ├── deps.py            # Dependencies
-│   │   └── main.py            # FastAPI app
-│   ├── Dockerfile
-│   └── uploads/               # Uploaded documents
-│
-├── frontend/                  # React Frontend
+knowledgebase-rag/
+├── frontend/
 │   ├── src/
-│   │   ├── components/       # UI Components
-│   │   │   ├── ChatArea.tsx
-│   │   │   ├── ChatInput.tsx
-│   │   │   ├── MessageBubble.tsx
-│   │   │   ├── Sidebar.tsx
-│   │   │   └── ui/           # shadcn/ui components
-│   │   ├── lib/
-│   │   │   └── api.ts        # API client
-│   │   ├── pages/
-│   │   │   └── Index.tsx     # Main page
-│   │   └── App.tsx
+│   │   ├── components/      # React components (.tsx)
+│   │   ├── pages/          # Page components
+│   │   ├── services/       # API integration
+│   │   ├── types/          # TypeScript types
+│   │   └── App.tsx         # Main application
 │   ├── package.json
-│   └── Dockerfile.dev
+│   └── vite.config.ts
 │
-├── requirements.txt           # Python dependencies
-├── docker-compose.yml         # Docker orchestration
-├── .env.example              # Environment template
-├── LICENSE                   # MIT License
-└── README.md                 # This file
+├── backend/
+│   ├── main.py             # FastAPI application entry
+│   ├── api/
+│   │   ├── routes/         # API endpoints
+│   │   └── dependencies.py # Shared dependencies
+│   ├── services/
+│   │   ├── document_parser.py  # PDF/DOCX parsing
+│   │   ├── embeddings.py       # NVIDIA embedding integration
+│   │   ├── vector_store.py     # ChromaDB operations
+│   │   ├── llm.py             # Gemini LLM integration
+│   │   └── database.py        # MongoDB operations
+│   ├── models/
+│   │   └── schemas.py      # Pydantic models
+│   ├── utils/
+│   │   ├── chunking.py     # Text chunking utilities
+│   │   └── config.py       # Configuration management
+│   └── requirements.txt
+│
+├── .env.example
+├── .gitignore
+└── README.md
 ```
-
-## 📚 Features & Usage
-
-### 1. Document Upload
-Upload documents through the web interface or API. Supported formats: PDF, DOCX, TXT, MD.
-
-```bash
-POST /api/upload/
-Content-Type: multipart/form-data
-
-file: <file>
-collection_name: "my_documents"
-```
-
-### 2. Ask Questions (RAG)
-Ask questions and get AI-generated answers based on your documents.
-
-```bash
-POST /api/ask/
-Content-Type: application/json
-
-{
-  "question": "What are the main findings?",
-  "collection": "knowledge_base",
-  "n_results": 5
-}
-```
-
-**Response:**
-```json
-{
-  "question": "What are the main findings?",
-  "answer": "Based on the documents...",
-  "contexts": [...],
-  "total_contexts": 5
-}
-```
-
-### 3. Conversation History
-All conversations are automatically saved to MongoDB.
-
-```bash
-# List all conversations
-GET /api/chat-history/conversations/
-
-# Get specific conversation
-GET /api/chat-history/conversations/{conversation_id}
-
-# Delete conversation
-DELETE /api/chat-history/conversations/{conversation_id}
-```
-
-### 4. Health Check
-```bash
-GET /health
-```
-
-## 🔧 Configuration
-
-Create a `.env` file in the root directory with the following settings:
-
-```env
-# Application
-ENVIRONMENT=development
-LOG_LEVEL=INFO
-CORS_ORIGINS=http://localhost:3000,http://localhost:8501,http://localhost:8080
-
-# NVIDIA NIM API (Required)
-NVIDIA_EMBEDDINGS_API_KEY=your_nvidia_embeddings_key
-NVIDIA_LLM_API_KEY=your_nvidia_llm_key
-NVIDIA_LLM_ENDPOINT=https://integrate.api.nvidia.com/v1
-NVIDIA_EMBED_MODEL_EN=nvidia/nv-embedqa-e5-v5
-NVIDIA_LLM_MODEL=mistralai/mistral-7b-instruct-v0.3
-
-# ChromaDB (Embedded Mode)
-CHROMA_PERSIST_DIR=./chroma_db
-CHROMA_HOST=localhost
-CHROMA_PORT=8000
-
-# MongoDB
-MONGO_URI=mongodb://localhost:27017/
-MONGO_DB_NAME=knowledgebase
-MONGO_COLLECTION_CONVERSATIONS=conversations
-
-# Document Processing
-CHUNK_SIZE=1000
-CHUNK_OVERLAP=200
-
-# RAG Settings
-TOP_K_RESULTS=5
-SIMILARITY_THRESHOLD=0.7
-MAX_TOKENS=1024
-TEMPERATURE=0.7
-```
-
-**Get your NVIDIA API keys:**
-1. Visit [NVIDIA Build](https://build.nvidia.com/)
-2. Sign in and create API keys for embeddings and LLM
-3. Add them to your `.env` file
-
-## 🌐 API Endpoints
-
-### Health & Status
-- `GET /health` - Health check
-- `GET /` - API information
-
-### Document Management
-- `POST /api/upload/` - Upload and process documents
-  - Accepts: PDF, DOCX, TXT, MD
-  - Automatically chunks and creates embeddings
-
-### Q&A with RAG
-- `POST /api/ask/` - Ask questions about your documents
-  - Retrieves relevant context
-  - Generates AI-powered answers
-
-### Conversation History
-- `GET /api/chat-history/conversations/` - List all conversations
-- `GET /api/chat-history/conversations/{id}` - Get conversation details
-- `POST /api/chat-history/conversations/` - Create new conversation
-- `POST /api/chat-history/conversations/{id}/messages` - Add message
-- `DELETE /api/chat-history/conversations/{id}` - Delete conversation
-
-**Interactive API Documentation:** http://localhost:8000/docs (when running)
-
-## � Docker Deployment
-
-```bash
-# Build and start all services
-docker-compose up -d --build
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-
-# Stop and remove volumes (clean slate)
-docker-compose down -v
-```
-
-**Services started:**
-- MongoDB (port 27017)
-- Backend FastAPI (port 8000)
-- Frontend React (port 5173)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please:
+We love contributions! Here's how you can help make Knowledgebase RAG even better:
 
+### 🐛 Found a Bug?
+Open an [issue](https://github.com/yourusername/knowledgebase-rag/issues) with detailed reproduction steps.
+
+### 💡 Have an Idea?
+We'd love to hear it! Open a [feature request](https://github.com/yourusername/knowledgebase-rag/issues/new?template=feature_request.md).
+
+### 🔧 Want to Code?
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -m 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## 🌟 Community
+
+<div align="center">
+
+### Join our growing community of developers!
+
+[![GitHub Discussions](https://img.shields.io/badge/GitHub-Discussions-181717?style=for-the-badge&logo=github)](https://github.com/yourusername/knowledgebase-rag/discussions)
+[![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/knowledgebase)
+[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/knowledgebase_ai)
+
+</div>
+
+## 📈 Roadmap
+
+- [ ] 🔌 **Additional LLM Providers** (OpenAI, Claude, Llama)
+- [ ] 📊 **Advanced Analytics** dashboard
+- [ ] 🌐 **Multi-language Support**
+- [ ] 🔊 **Audio Document Processing**
+- [ ] 📱 **Mobile Application**
+- [ ] 🔗 **REST API Documentation** with Swagger
+- [ ] 🎨 **Custom Theming**
+- [ ] 👥 **Multi-user Support & Collaboration**
+- [ ] 🔐 **Role-based Access Control**
+- [ ] 📤 **Export Conversations**
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env` file in the backend directory:
+
+```env
+# NVIDIA Embedding API
+NVIDIA_API_KEY=your_nvidia_api_key
+
+# Google Gemini API
+GEMINI_API_KEY=your_gemini_api_key
+
+# ChromaDB Cloud
+CHROMADB_URL=your_chromadb_cloud_url
+CHROMADB_API_KEY=your_chromadb_api_key
+
+# MongoDB Atlas
+MONGODB_URI=your_mongodb_api
+# FastAPI Configuration
+API_HOST=0.0.0.0
+API_PORT=8000
+CORS_ORIGINS=http://localhost:5173
+
+# Optional Configuration
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=200
+MAX_CHUNKS_RETURNED=5
+MAX_FILE_SIZE=10485760  # 10MB
+```
+
+## 🔒 Security
+
+- All API keys are stored securely in `.env` file
+- `.env` file is git-ignored for security
+- MongoDB connections use encrypted connections
+- ChromaDB Cloud provides secure vector storage
+- CORS configured for frontend-backend communication
+- File upload size limits enforced
+- Input validation with Pydantic models
+
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Troubleshooting
+## 🙏 Acknowledgments
 
-### NVIDIA API Issues
-```
-Error: NVIDIA_LLM_API_KEY not found
-```
-- Ensure API keys are set in `.env` file
-- Verify keys are valid at [NVIDIA Build](https://build.nvidia.com/)
-
-### MongoDB Connection Failed
-```powershell
-# Check if MongoDB is running
-docker ps | findstr mongodb
-
-# Start MongoDB if not running
-docker run -d -p 27017:27017 --name mongodb mongo:7
-```
-
-### Port Already in Use
-```powershell
-# Backend (port 8000)
-netstat -ano | findstr :8000
-taskkill /PID <PID> /F
-
-# Frontend (port 5173)
-netstat -ano | findstr :5173
-taskkill /PID <PID> /F
-```
-
-### ChromaDB Issues
-```powershell
-# Reset ChromaDB (delete and recreate)
-Remove-Item -Recurse -Force .\chroma_db
-# Restart backend - it will recreate automatically
-```
-
-### Dependencies Not Installing
-```powershell
-# Backend
-pip install --upgrade pip
-pip install -r requirements.txt --force-reinstall
-
-# Frontend
-npm cache clean --force
-Remove-Item -Recurse -Force node_modules
-npm install
-```
-
-## 📞 Support
-
-- **Issues:** [GitHub Issues](https://github.com/debashish17/Knowledgebase-RAG/issues)
-- **Documentation:** Check this README and inline code comments
-- **API Docs:** http://localhost:8000/docs (when running)
-
-## 🗺️ Roadmap
-
-Future enhancements planned:
-- [ ] User authentication and multi-user support
-- [ ] Document versioning and history
-- [ ] Advanced metadata filtering
-- [ ] Real-time collaboration
-- [ ] Export conversation history
-- [ ] Custom embedding models
-- [ ] Multi-language document support
-- [ ] Performance optimizations for large documents
-
-## � Resources
-
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [ChromaDB Documentation](https://docs.trychroma.com/)
-- [NVIDIA NIM Documentation](https://build.nvidia.com/explore/discover)
-- [React Documentation](https://react.dev/)
-- [MongoDB Documentation](https://docs.mongodb.com/)
+- 🧠 **NVIDIA** for providing powerful embedding APIs
+- 🤖 **Google** for Gemini LLM capabilities
+- 💾 **ChromaDB Team** for vector database solution
+- 🍃 **MongoDB** for reliable document storage
+- ⚡ **FastAPI Team** for the amazing web framework
+- ⚛️ **React Team** for the frontend library
+- 👥 **Open Source Community** for inspiration and tools
+- 🌟 **Contributors** who help make this project better
 
 ---
 
-**Built with ❤️ using FastAPI, React, ChromaDB, and NVIDIA NIM**
+<div align="center">
 
-**Version:** 1.0.0  
-**Last Updated:** October 2025
+### ⭐ Star us on GitHub if Knowledgebase RAG helps you work smarter with your documents!
+
+**Made with ❤️ for the AI and Developer community**
+
+[⬆️ Back to top](#-knowledgebase-rag)
+
+</div>

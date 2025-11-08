@@ -36,11 +36,11 @@ class MongoDBService:
                 self.conversations.create_index([("created_at", DESCENDING)])
                 self.conversations.create_index([("collection", 1)])
                 
-                logger.info("✅ Connected to MongoDB successfully")
+                logger.info("Connected to MongoDB successfully")
             else:
-                logger.warning("⚠️ MongoDB URI not configured, chat history will not be persisted")
+                logger.warning("MongoDB URI not configured, chat history will not be persisted")
         except Exception as e:
-            logger.error(f"❌ Failed to connect to MongoDB: {e}")
+            logger.error(f"Failed to connect to MongoDB: {e}")
             self.client = None
     
     def is_connected(self) -> bool:

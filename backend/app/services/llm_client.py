@@ -1,25 +1,41 @@
 import os
 import logging
 from typing import List, Dict, Any
+from google import genai
 from openai import OpenAI
 from app.config import settings
 
 logger = logging.getLogger(__name__)
 
 class LLMClient:
-    def __init__(self):
-        # Use NVIDIA LLM API key from settings
-        api_key = settings.NVIDIA_LLM_API_KEY
-        if not api_key:
-            raise ValueError("NVIDIA_LLM_API_KEY not found in settings. Please set it in .env file")
-            
-        self.client = OpenAI(
-            base_url="https://integrate.api.nvidia.com/v1",
-            api_key=api_key
+    def generate_title_from_context(self, context: str, filename: str = "") -> str:
+        """
+        Generate a concise 2-3 word title describing the document context using Gemini.
+        """
+        system_message = (
+            "You are an expert at creating concise, descriptive titles. Always respond with ONLY the title, nothing else."
         )
-        # Use the correct NVIDIA Mistral model
-        self.model = settings.NVIDIA_LLM_MODEL
-        logger.info(f"✅ Initialized LLM client with model: {self.model}")
+        prompt = f"System: {system_message}\n\nBased on the following document content, generate a concise 2-3 word title that describes what this document is about.\n\nDocument content:\n{context[:1500]}...\n\nOriginal filename: {filename}\n\nRequirements:\n- MUST be 2-3 words maximum\n- Be descriptive and specific\n- Use title case\n- No special characters or punctuation\n- Examples: 'Python Tutorial', 'Tax Guide 2024', 'Research Paper'\n\nTitle:"
+        try:
+            response = self.gemini_client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            title = response.text.strip().strip('"\'')
+            words = title.split()
+            if len(words) > 4:
+                title = ' '.join(words[:3])
+            logger.info(f"Generated title: '{title}' for file: {filename}")
+            return title
+        except Exception as e:
+            logger.error(f"Title generation failed: {str(e)}")
+            fallback = filename.replace('.pdf', '').replace('.docx', '').replace('_', ' ')
+            return ' '.join(fallback.split()[:3]).title()
+    def __init__(self):
+        self.provider = os.getenv("LLM_PROVIDER", "gemini").lower()
+        # Only Gemini is supported
+        self.gemini_client = genai.Client()
+    logger.info("Initialized LLM client with Gemini API (google-genai)")
     
     def calculate_confidence(self, contexts: List[Dict], answer: str) -> str:
         """
@@ -86,121 +102,39 @@ class LLMClient:
             Dictionary with answer and confidence information
         """
         try:
-            # Enhanced system message for better behavior
-            system_message = """You are an expert AI assistant specializing in document analysis and knowledge retrieval. Your core strengths are:
-
-1. **Accuracy**: You provide information strictly based on provided contexts without hallucination
-2. **Clarity**: You structure answers in clear, digestible formats with proper organization
-3. **Transparency**: You explicitly state when information is insufficient or unavailable
-4. **Synthesis**: You combine information from multiple sources to provide comprehensive answers
-5. **Citation**: You reference source contexts when making specific claims
-
-Your goal is to help users understand their documents by providing accurate, well-reasoned, and well-structured answers."""
-
-            completion = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.3,  # Lower temperature for more factual answers
-                top_p=0.9,
-                max_tokens=1024,
-                stream=True
+            # Use google-genai SDK for Gemini
+            # If contexts are provided, prepend them to the prompt
+            system_message = (
+                "You are an expert AI assistant specializing in document analysis and knowledge retrieval. "
+                "Your core strengths are: Accuracy, Clarity, Transparency, Synthesis, and Citation. "
+                "Always answer based on the provided context. If the answer is not in the context, say so."
             )
-            
-            # Collect the streamed response
-            full_response = ""
-            for chunk in completion:
-                if chunk.choices[0].delta.content is not None:
-                    full_response += chunk.choices[0].delta.content
-            
-            # Calculate confidence if contexts provided
+            if contexts and len(contexts) > 0:
+                context_text = "\n\n".join([ctx.get("text", "") for ctx in contexts])
+                full_prompt = f"System: {system_message}\n\nContext:\n{context_text}\n\nQuestion: {prompt}"
+            else:
+                full_prompt = f"System: {system_message}\n\nQuestion: {prompt}"
+            try:
+                response = self.gemini_client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=full_prompt
+                )
+                full_response = response.text
+            except Exception as e:
+                logger.error(f"Gemini API call failed: {str(e)}")
+                raise
             confidence = "Medium"
             if contexts:
                 confidence = self.calculate_confidence(contexts, full_response)
-            
-            logger.info(f"✅ Generated answer with {confidence} confidence")
-            
+            logger.info(f"Generated answer with {confidence} confidence (Gemini)")
             return {
                 "answer": full_response,
                 "confidence": confidence
             }
-            
         except Exception as e:
-            logger.error(f"❌ Answer generation failed: {str(e)}")
+            logger.error(f"Answer generation failed: {str(e)}")
             raise
     
-    def generate_answer_stream(self, prompt):
-        """Alternative method for streaming responses directly"""
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.2,
-            top_p=0.7,
-            max_tokens=1024,
-            stream=True
-        )
-        
-        for chunk in completion:
-            if chunk.choices[0].delta.content is not None:
-                yield chunk.choices[0].delta.content
+    # Streaming not supported for Gemini in this implementation
     
-    def generate_title_from_content(self, content: str, filename: str = "") -> str:
-        """
-        Generate a concise 2-3 word title describing document content
-        
-        Args:
-            content: Sample text from the document (first few chunks)
-            filename: Original filename for context
-            
-        Returns:
-            Short descriptive title (2-3 words)
-        """
-        try:
-            # Create a prompt for title generation
-            prompt = f"""Based on the following document content, generate a concise 2-3 word title that describes what this document is about.
-
-Document content:
-{content[:1500]}...
-
-Original filename: {filename}
-
-Requirements:
-- MUST be 2-3 words maximum
-- Be descriptive and specific
-- Use title case
-- No special characters or punctuation
-- Examples: "Python Tutorial", "Tax Guide 2024", "Research Paper"
-
-Title:"""
-
-            completion = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are an expert at creating concise, descriptive titles. Always respond with ONLY the title, nothing else."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.3,
-                max_tokens=20,  # Keep it short
-                stream=False
-            )
-            
-            title = completion.choices[0].message.content.strip()
-            
-            # Clean up the title (remove quotes, extra spaces)
-            title = title.strip('"\'').strip()
-            
-            # Ensure it's not too long (safety check)
-            words = title.split()
-            if len(words) > 4:
-                title = ' '.join(words[:3])
-            
-            logger.info(f"✅ Generated title: '{title}' for file: {filename}")
-            return title
-            
-        except Exception as e:
-            logger.error(f"❌ Title generation failed: {str(e)}")
-            # Fallback to filename-based title
-            fallback = filename.replace('.pdf', '').replace('.docx', '').replace('_', ' ')
-            return ' '.join(fallback.split()[:3]).title()
+    # Title generation for Gemini can be implemented here if needed

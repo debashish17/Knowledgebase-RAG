@@ -105,7 +105,7 @@ async def ask_question(request: AskRequest) -> AskResponse:
         
         context_str = "\n\n".join(context_parts)
         
-        prompt = f"""You are a knowledgeable AI assistant that provides accurate, well-structured answers based on document analysis.
+        prompt = f"""You are an expert AI assistant. Always provide detailed, well-structured answers based strictly on the provided context. Never hallucinate or invent information. If the answer is not fully present, clearly state what is missing and do not speculate. Use bullet points and examples for clarity. Be thorough and professional.
 
 ═══════════════════════════════════════════════════════════════
 📚 RETRIEVED CONTEXTS
@@ -207,8 +207,8 @@ async def ask_question(request: AskRequest) -> AskResponse:
                 try:
                     # Use question + answer context to generate a relevant title
                     title_prompt = f"Question: {request.question}\nAnswer: {result['answer'][:500]}"
-                    suggested_title = llm_client.generate_title_from_content(
-                        content=title_prompt,
+                    suggested_title = llm_client.generate_title_from_context(
+                        context=title_prompt,
                         filename=""
                     )
                     # Update conversation title
