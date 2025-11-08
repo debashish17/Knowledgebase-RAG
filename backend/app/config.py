@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8501,http://localhost:8080"
+    CORS_ORIGINS: str = "*"
 
     NVIDIA_EMBEDDINGS_API_KEY: Optional[str] = None
     NVIDIA_LLM_ENDPOINT: str = "https://integrate.api.nvidia.com/v1"
