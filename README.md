@@ -6,13 +6,13 @@
 
 *Transform your documents into an interactive knowledge base powered by advanced RAG technology*
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/knowledgebase-rag?style=for-the-badge&logo=github&color=ff6b35)](https://github.com/yourusername/knowledgebase-rag/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/yourusername/knowledgebase-rag?style=for-the-badge&logo=github&color=ff6b35)](https://github.com/debashish17/knowledgebase-rag)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.8+-green?style=for-the-badge&logo=python)](https://www.python.org/)
 [![React](https://img.shields.io/badge/React-18+-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 
-[🚀 Try Live Demo](https://your-deployed-website.com) • [🚀 Quick Start](#-quick-start) • [📚 Documentation](#-documentation) • [💬 Community](#-community)
+[🚀 Try Live Demo](https://knowledgebase-rag.onrender.com) • [🚀 Quick Start](#-quick-start) • [📚 Documentation](#-documentation) • [💬 Community](#-community)
 
 </div>
 
