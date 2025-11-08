@@ -15,6 +15,7 @@
 [🚀 Try Live Demo](https://knowledgebase-rag.onrender.com) • [🚀 Quick Start](#-quick-start) • [📚 Documentation](#-documentation) • [💬 Community](#-community)
 
 ---
+</div>
 
 ## 🌐 Live Demo
 
