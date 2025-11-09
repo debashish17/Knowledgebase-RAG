@@ -15,6 +15,21 @@ logger = logging.getLogger(__name__)
 
 
 class VectorStore:
+    def get_all_documents(self, limit: int = 300) -> list:
+        """Retrieve all documents from the ChromaDB collection (up to limit)."""
+        try:
+            results = self.collection.peek(limit=limit)
+            docs = []
+            for doc, metadata, doc_id in zip(
+                results.get("documents", []),
+                results.get("metadatas", []),
+                results.get("ids", [])
+            ):
+                docs.append({"text": doc, "metadata": metadata, "id": doc_id})
+            return docs
+        except Exception as e:
+            logger.error(f"Failed to retrieve all documents: {e}")
+            return []
     """Wrapper for Chroma Cloud vector database operations."""
 
     def __init__(self, collection_name: str = "knowledge_base"):

@@ -15,7 +15,7 @@ from app.utils.logging_config import setup_logging
 from app.deps import cleanup_connections
 
 # Import API routers
-from app.api import health, upload, ask, chat_history
+from app.api import health, upload, ask, chat_history, summarize, study_links, generate_quiz
 
 # Setup logging
 setup_logging(settings.LOG_LEVEL)
@@ -57,10 +57,14 @@ app.add_middleware(
 )
 
 # Include routers
+
 app.include_router(health.router, tags=["Health"])
 app.include_router(upload.router, tags=["Upload"])
 app.include_router(ask.router, tags=["Ask"])
 app.include_router(chat_history.router, tags=["Chat History"])
+app.include_router(summarize.router, tags=["Summarize"])
+app.include_router(study_links.router, tags=["Study Links"])
+app.include_router(generate_quiz.router, tags=["Quiz"])
 
 
 @app.get("/")

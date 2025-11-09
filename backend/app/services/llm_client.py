@@ -8,6 +8,41 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 class LLMClient:
+    def generate_links(self, prompt: str) -> str:
+        """Generate study links using LLM (Gemini or other)."""
+        try:
+            response = self.gemini_client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            return response.text.strip()
+        except Exception as e:
+            logger.error(f"Failed to generate study links: {str(e)}")
+            return ""
+    def summarize(self, text: str) -> str:
+        """
+        Summarize a document using Gemini LLM.
+        """
+        system_message = (
+            "You are an expert AI assistant. Summarize the following document in clear, concise language. Use bullet points for key ideas if appropriate. Do not add information that is not present in the document."
+        )
+        prompt = (
+            "You are a study assistant. Read the following knowledge base content and provide a detailed, comprehensive summary of the entire knowledge base. "
+            "Do not limit your summary to the top search results; instead, synthesize information from all available documents. "
+            "Highlight key topics, important details, and overall themes.\n\n"
+            f"{text}\n\nSummary:"
+        )
+        try:
+            response = self.gemini_client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            summary = response.text.strip()
+            logger.info("Generated summary for document.")
+            return summary
+        except Exception as e:
+            logger.error(f"Document summarization failed: {str(e)}")
+            return "Summary could not be generated."
     def generate_title_from_context(self, context: str, filename: str = "") -> str:
         """
         Generate a concise 2-3 word title describing the document context using Gemini.
