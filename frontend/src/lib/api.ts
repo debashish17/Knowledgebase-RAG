@@ -1,3 +1,33 @@
+export interface QuizOption {
+  text: string;
+}
+
+export interface QuizQuestion {
+  question: string;
+  options: QuizOption[];
+  answer: number; // index of correct option
+}
+
+export interface GenerateQuizRequest {
+  collection?: string;
+  n_questions?: number;
+  conversation_id?: string;
+}
+
+export interface GenerateQuizResponse {
+  questions: QuizQuestion[];
+}
+
+export interface EvaluateQuizRequest {
+  questions: QuizQuestion[];
+  user_answers: number[];
+}
+
+export interface EvaluateQuizResponse {
+  score: number;
+  total: number;
+  results: boolean[];
+}
 // API types and interfaces
 export interface Message {
   id: string;
@@ -88,6 +118,35 @@ export interface HealthResponse {
 
 // API Client class
 class APIClient {
+  async generateQuiz(request: GenerateQuizRequest): Promise<GenerateQuizResponse> {
+    const response = await fetch(`${this.baseUrl}/generate-quiz`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Quiz generation failed');
+    }
+    return response.json();
+  }
+
+  async evaluateQuiz(request: EvaluateQuizRequest): Promise<EvaluateQuizResponse> {
+    const response = await fetch(`${this.baseUrl}/evaluate-quiz`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Quiz evaluation failed');
+    }
+    return response.json();
+  }
   private baseUrl: string;
 
   constructor(baseUrl: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000') {

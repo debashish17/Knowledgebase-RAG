@@ -11,6 +11,59 @@ interface MessageBubbleProps {
 }
 
 export const MessageBubble = ({ content, isUser, timestamp }: MessageBubbleProps) => {
+  // Custom rendering for study links
+  const renderContent = () => {
+    if (!isUser && content.startsWith("Study Links:")) {
+      // Parse numbered links from content
+      const lines = content.split("\n").slice(1); // skip "Study Links:" line
+      const parsed = lines.map((line, idx) => {
+        // Match "1. https://... - Note"
+        const match = line.match(/\d+\.\s*(https?:\/\/\S+)\s*-\s*(.+)/);
+        if (match) {
+          const url = match[1];
+          const note = match[2];
+          return (
+            <div key={idx} className="flex flex-col">
+              <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary underline font-medium">
+                {url}
+              </a>
+              <span className="text-xs text-muted-foreground mt-1">{note}</span>
+            </div>
+          );
+        }
+        // Fallback: show raw line if not parsed
+        return (
+          <div key={idx} className="flex flex-col">
+            <span className="text-xs text-muted-foreground mt-1">{line}</span>
+          </div>
+        );
+      });
+      return <div className="space-y-2">{parsed}</div>;
+    }
+    // Default rendering
+    return isUser ? (
+      <p className="whitespace-pre-wrap m-0">{content}</p>
+    ) : (
+      <ReactMarkdown 
+        remarkPlugins={[remarkGfm]}
+        components={{
+          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+          ul: ({ children }) => <ul className="mb-2 pl-4 list-disc">{children}</ul>,
+          ol: ({ children }) => <ol className="mb-2 pl-4 list-decimal">{children}</ol>,
+          li: ({ children }) => <li className="mb-1">{children}</li>,
+          strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+          em: ({ children }) => <em className="italic">{children}</em>,
+          code: ({ children }) => <code className="bg-black/30 px-1 py-0.5 rounded text-xs">{children}</code>,
+          h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-base font-bold mb-2">{children}</h2>,
+          h3: ({ children }) => <h3 className="text-sm font-bold mb-1">{children}</h3>,
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    );
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -38,7 +91,7 @@ export const MessageBubble = ({ content, isUser, timestamp }: MessageBubbleProps
       </div>
 
       {/* Message Content */}
-      <div className={cn("flex flex-col max-w-[70%]", isUser ? "items-end" : "items-start")}>
+      <div className={cn("flex flex-col max-w-[70%]", isUser ? "items-end" : "items-start")}> 
         <div
           className={cn(
             "rounded-2xl px-4 py-3 backdrop-blur-glass border transition-all",
@@ -48,27 +101,7 @@ export const MessageBubble = ({ content, isUser, timestamp }: MessageBubbleProps
           )}
         >
           <div className="text-sm text-foreground leading-relaxed prose prose-sm prose-invert max-w-none">
-            {isUser ? (
-              <p className="whitespace-pre-wrap m-0">{content}</p>
-            ) : (
-              <ReactMarkdown 
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                  ul: ({ children }) => <ul className="mb-2 pl-4 list-disc">{children}</ul>,
-                  ol: ({ children }) => <ol className="mb-2 pl-4 list-decimal">{children}</ol>,
-                  li: ({ children }) => <li className="mb-1">{children}</li>,
-                  strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
-                  em: ({ children }) => <em className="italic">{children}</em>,
-                  code: ({ children }) => <code className="bg-black/30 px-1 py-0.5 rounded text-xs">{children}</code>,
-                  h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
-                  h2: ({ children }) => <h2 className="text-base font-bold mb-2">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-sm font-bold mb-1">{children}</h3>,
-                }}
-              >
-                {content}
-              </ReactMarkdown>
-            )}
+            {renderContent()}
           </div>
         </div>
         <span className="text-xs text-muted-foreground mt-1 px-1">
@@ -77,4 +110,4 @@ export const MessageBubble = ({ content, isUser, timestamp }: MessageBubbleProps
       </div>
     </motion.div>
   );
-};
+}
