@@ -48,6 +48,13 @@ class Settings(BaseSettings):
     AUTO_DETECT_LANGUAGE: bool = True
     DEFAULT_LANGUAGE: str = "en"
     NVIDIA_EMBEDDING_DIMENSION: int = 1024
+    # URL to the frontend (used by backend to keep the frontend alive). Set this
+    # via environment variable FRONTEND_URL when deployed (e.g. https://your-frontend.onrender.com)
+    # URL to the frontend (used by backend to keep the frontend alive). Set this
+    # via environment variable FRONTEND_URL when deployed (e.g. https://your-frontend.onrender.com)
+    FRONTEND_URL: Optional[str] = None
+    # How often (seconds) the backend should ping the frontend when FRONTEND_URL is set
+    FRONTEND_PING_INTERVAL_SECONDS: int = 300  # 5 minutes
 
     class Config:
         env_file = "../.env"

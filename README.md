@@ -1,10 +1,10 @@
 <div align="center">
 
-# 📚 Knowledgebase RAG
+# 📚 AI Study Buddy
 
-### 🤖 Chat with Your Documents Using AI
+### 🤖 Chat, Study, Quiz & Organize with AI
 
-*Transform your documents into an interactive knowledge base powered by advanced RAG technology*
+*Transform your documents into an interactive study companion powered by advanced RAG technology*
 
 [![GitHub stars](https://img.shields.io/github/stars/yourusername/knowledgebase-rag?style=for-the-badge&logo=github&color=ff6b35)](https://github.com/yourusername/knowledgebase-rag/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
@@ -22,17 +22,65 @@
 
 <div align="center">
 
-**[🚀 Try Knowledgebase RAG Now](https://your-deployed-website.com)**
+**[🚀 Try AI Study Buddy Now](https://your-deployed-website.com)**
 
-Experience the power of AI-driven document conversations. Upload your documents and start asking questions!
+Experience the power of AI-driven study and document conversations. Upload your documents, take interactive quizzes, track your progress, and organize your study tasks—all in one place!
 
 </div>
 
-## 🎯 What is Knowledgebase RAG?
+## 🎯 What is AI Study Buddy?
 
-Knowledgebase RAG is an intelligent **AI-powered document assistant** that uses Retrieval-Augmented Generation (RAG) to enable natural conversations with your documents. Upload PDFs or DOCX files and get accurate, contextual answers powered by cutting-edge AI models! Built with a modern React + TypeScript frontend and FastAPI backend. ✨
+AI Study Buddy is an **advanced, all-in-one AI-powered study assistant** that transforms how you interact with your learning materials. Whether you're a student, researcher, educator, or professional, AI Study Buddy uses Retrieval-Augmented Generation (RAG) to enable natural conversations with your documents, generate intelligent summaries, create interactive quizzes, and seamlessly track your study progress.
+
+Upload PDFs or DOCX files, ask questions, get contextual answers, generate MCQ quizzes with instant feedback, receive curated study links, and automatically log your achievements to your calendar—all in one unified platform!
+
+Built with a modern React 18 + TypeScript frontend and FastAPI backend. ✨
 
 ## 🌟 Key Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 💬 **Conversational Document Chat**
+- Natural, context-aware conversations with your documents
+- Ask questions and clarify concepts instantly
+- AI-generated answers tailored to your study needs
+
+### 📝 **Smart Summarization**
+- Generate concise summaries of entire knowledge base
+- Summarize specific documents
+- Review and retain key information effortlessly
+
+### 🔗 **Study Links & Resources**
+- Curated, authoritative web links related to your content
+- Helpful notes explaining relevance
+- Perfect for further exploration and research
+
+</td>
+<td width="50%">
+
+### 🎯 **Interactive Quizzes**
+- Generate MCQ quizzes based on uploaded content
+- Get instant feedback and scores
+- Personalized remarks to track progress
+- Reinforce learning through active practice
+
+### 📅 **Calendar & ToDo Integration**
+- Every completed quiz tracked as a task
+- Organize your study schedule seamlessly
+- Set reminders and monitor achievements in real time
+
+### 💾 **Persistent Chat History**
+- All conversations securely stored
+- Access summaries, links, and quiz results anytime
+- Build upon your learning journey
+
+</td>
+</tr>
+</table>
+
+### 🏗️ Additional Capabilities
 
 <table>
 <tr>
@@ -116,10 +164,10 @@ npm run dev
 
 ### 🎉 Launch
 
-- **Backend:** Open `http://localhost:8000`
-- **Frontend:** Open `http://localhost:5173`
+- **Backend:** Open http://localhost:8000
+- **Frontend:** Open http://localhost:5173
 
-That's it! Start chatting with your documents! 🚀
+That's it! Start chatting with your documents, taking quizzes, and organizing your study schedule! 🚀
 
 ## 🔑 API & Service Setup
 
@@ -133,6 +181,7 @@ That's it! Start chatting with your documents! 🚀
 5. Add to `.env`: `NVIDIA_API_KEY=your_key_here`
 
 **Used for:** Generating high-quality vector embeddings
+
 </details>
 
 <details>
@@ -144,6 +193,7 @@ That's it! Start chatting with your documents! 🚀
 4. Add to `.env`: `GEMINI_API_KEY=your_key_here`
 
 **Used for:** Natural language answer generation
+
 </details>
 
 <details>
@@ -156,6 +206,7 @@ That's it! Start chatting with your documents! 🚀
 5. Add to `.env`: `CHROMADB_URL=your_url_here`
 
 **Used for:** Storing and querying vector embeddings
+
 </details>
 
 <details>
@@ -167,7 +218,8 @@ That's it! Start chatting with your documents! 🚀
 4. Get your connection string
 5. Add to `.env`: `MONGODB_URI=your_connection_string`
 
-**Used for:** Persisting chat history and conversations
+**Used for:** Persisting chat history, quiz results, and task tracking
+
 </details>
 
 ## 📚 Documentation
@@ -187,6 +239,10 @@ graph TD
     I --> J[💬 Generated Answer]
     J --> K[💾 MongoDB Atlas]
     K --> L[📊 Chat History]
+    M[🎯 Quiz Generation] --> I
+    I --> N[📝 MCQ Quiz]
+    N --> O[✅ Quiz Completion]
+    O --> P[📅 Calendar Task]
 ```
 
 ### 🔄 How It Works
@@ -195,34 +251,49 @@ graph TD
 - Documents (PDF/DOCX) are uploaded through the React interface
 - FastAPI backend receives and processes files
 - PyPDF2 or python-docx extracts text content
-- Text is split into semantic chunks for better context
+- Text is split into semantic chunks for optimal context retrieval
 
 **2. Embedding & Storage**
 - Each chunk is converted to vectors using NVIDIA Embedding API
 - Vectors are stored in ChromaDB Cloud with metadata
-- Enables fast semantic similarity search
+- Enables fast semantic similarity search for relevant information
 
 **3. Query & Retrieval**
 - User questions are submitted via React frontend
 - FastAPI backend embeds questions using NVIDIA API
 - Semantic search finds most relevant document chunks
-- Context is passed to Gemini for answer generation
+- Context is passed to Gemini LLM for accurate answer generation
 
-**4. Conversation Management**
-- All interactions are saved to MongoDB Atlas
+**4. Summarization & Study Links**
+- Generate concise summaries of documents or entire knowledge base
+- Receive curated web links with explanatory notes
+- Enhance understanding with additional resources
+
+**5. Interactive Quizzes**
+- Generate MCQ quizzes based on your uploaded content
+- Take quizzes with instant feedback and scoring
+- Get personalized remarks to reinforce learning
+
+**6. Task Management**
+- Completed quizzes automatically logged as tasks
+- Integrated calendar/todo system tracks study progress
+- Stay organized with real-time achievement monitoring
+
+**7. Conversation Management**
+- All interactions saved to MongoDB Atlas
 - Chat history maintains context across sessions
-- Users can access previous conversations
-- Real-time updates via FastAPI WebSocket connections
+- Users can access previous conversations, summaries, and quiz results
+- Real-time updates via FastAPI connections
 
 ### 🎯 Use Cases
 
 | Use Case | Description | Perfect For |
 |----------|-------------|-------------|
-| 📖 **Research Assistant** | Query research papers & documents | Researchers, Students |
-| 📋 **Document Analysis** | Extract insights from reports | Business Analysts |
-| 🏢 **Knowledge Base** | Company documentation Q&A | Enterprises, Teams |
-| 📚 **Study Helper** | Interactive learning from textbooks | Students, Educators |
-| ⚖️ **Legal Research** | Query legal documents & contracts | Lawyers, Paralegals |
+| 📖 **Interactive Study Companion** | Chat with textbooks, take quizzes, track progress | Students, Lifelong Learners |
+| 📋 **Research Assistant** | Query research papers, get summaries & links | Researchers, Academics |
+| 🏢 **Professional Development** | Analyze reports, generate study materials | Professionals, Analysts |
+| 📚 **Exam Preparation** | Create quizzes, review summaries, organize study | Students, Educators |
+| ⚖️ **Training & Certification** | Interactive learning with progress tracking | Corporate Training, Self-learners |
 
 ### 🔧 Technology Stack
 
@@ -230,7 +301,7 @@ graph TD
 
 | Category | Technologies |
 |----------|-------------|
-| **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) |
+| **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white) |
 | **Backend** | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white) ![Uvicorn](https://img.shields.io/badge/Uvicorn-2C2D72?style=flat&logo=gunicorn&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white) |
 | **Document Parsing** | ![PyPDF2](https://img.shields.io/badge/PyPDF2-FF6B6B?style=flat&logo=adobe-acrobat-reader&logoColor=white) ![python-docx](https://img.shields.io/badge/python--docx-2B579A?style=flat&logo=microsoft-word&logoColor=white) |
 | **AI & Embeddings** | ![NVIDIA](https://img.shields.io/badge/NVIDIA_API-76B900?style=flat&logo=nvidia&logoColor=white) ![Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=flat&logo=google&logoColor=white) |
@@ -245,7 +316,7 @@ knowledgebase-rag/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # React components (.tsx)
-│   │   ├── pages/          # Page components
+│   │   ├── pages/          # Page components (Chat, Quiz, Calendar)
 │   │   ├── services/       # API integration
 │   │   ├── types/          # TypeScript types
 │   │   └── App.tsx         # Main application
@@ -255,13 +326,15 @@ knowledgebase-rag/
 ├── backend/
 │   ├── main.py             # FastAPI application entry
 │   ├── api/
-│   │   ├── routes/         # API endpoints
+│   │   ├── routes/         # API endpoints (chat, quiz, calendar)
 │   │   └── dependencies.py # Shared dependencies
 │   ├── services/
 │   │   ├── document_parser.py  # PDF/DOCX parsing
 │   │   ├── embeddings.py       # NVIDIA embedding integration
 │   │   ├── vector_store.py     # ChromaDB operations
 │   │   ├── llm.py             # Gemini LLM integration
+│   │   ├── quiz_generator.py  # Quiz generation logic
+│   │   ├── summarizer.py      # Summarization service
 │   │   └── database.py        # MongoDB operations
 │   ├── models/
 │   │   └── schemas.py      # Pydantic models
@@ -277,7 +350,7 @@ knowledgebase-rag/
 
 ## 🤝 Contributing
 
-We love contributions! Here's how you can help make Knowledgebase RAG even better:
+We love contributions! Here's how you can help make AI Study Buddy even better:
 
 ### 🐛 Found a Bug?
 Open an [issue](https://github.com/yourusername/knowledgebase-rag/issues) with detailed reproduction steps.
@@ -286,6 +359,7 @@ Open an [issue](https://github.com/yourusername/knowledgebase-rag/issues) with d
 We'd love to hear it! Open a [feature request](https://github.com/yourusername/knowledgebase-rag/issues/new?template=feature_request.md).
 
 ### 🔧 Want to Code?
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
@@ -306,8 +380,13 @@ We'd love to hear it! Open a [feature request](https://github.com/yourusername/k
 
 ## 📈 Roadmap
 
+- [x] 💬 **Conversational Document Chat**
+- [x] 📝 **Smart Summarization**
+- [x] 🎯 **Interactive MCQ Quizzes**
+- [x] 📅 **Calendar & ToDo Integration**
+- [x] 🔗 **Study Links & Resources**
 - [ ] 🔌 **Additional LLM Providers** (OpenAI, Claude, Llama)
-- [ ] 📊 **Advanced Analytics** dashboard
+- [ ] 📊 **Advanced Analytics Dashboard**
 - [ ] 🌐 **Multi-language Support**
 - [ ] 🔊 **Audio Document Processing**
 - [ ] 📱 **Mobile Application**
@@ -315,7 +394,9 @@ We'd love to hear it! Open a [feature request](https://github.com/yourusername/k
 - [ ] 🎨 **Custom Theming**
 - [ ] 👥 **Multi-user Support & Collaboration**
 - [ ] 🔐 **Role-based Access Control**
-- [ ] 📤 **Export Conversations**
+- [ ] 📤 **Export Conversations & Quiz Results**
+- [ ] 🏆 **Gamification & Achievements**
+- [ ] 📈 **Learning Analytics & Progress Tracking**
 
 ## ⚙️ Configuration
 
@@ -335,7 +416,8 @@ CHROMADB_URL=your_chromadb_cloud_url
 CHROMADB_API_KEY=your_chromadb_api_key
 
 # MongoDB Atlas
-MONGODB_URI=your_mongodb_api
+MONGODB_URI=your_mongodb_connection_string
+
 # FastAPI Configuration
 API_HOST=0.0.0.0
 API_PORT=8000
@@ -377,10 +459,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-### ⭐ Star us on GitHub if Knowledgebase RAG helps you work smarter with your documents!
+### ⭐ Star us on GitHub if AI Study Buddy helps you study smarter and achieve more!
 
-**Made with ❤️ for the AI and Developer community**
+**Made with ❤️ for the AI, Education, and Developer community**
 
-[⬆️ Back to top](#-knowledgebase-rag)
+[⬆️ Back to top](#-ai-study-buddy)
 
 </div>

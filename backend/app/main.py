@@ -6,6 +6,8 @@ Includes all API routes and service initialization.
 """
 import logging
 from contextlib import asynccontextmanager
+import asyncio
+import httpx
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,11 +32,31 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Knowledge Base RAG API")
     logger.info(f"   Environment: {settings.ENVIRONMENT}")
     logger.info(f"   Chroma Cloud: tenant={settings.CHROMA_TENANT}, database={settings.CHROMA_DATABASE}")
-    
+
+    # Optional background task: if FRONTEND_URL is configured, periodically ping it
+    ping_task: asyncio.Task | None = None
+    if settings.FRONTEND_URL:
+        async def ping_frontend_loop():
+            interval = max(5, int(settings.FRONTEND_PING_INTERVAL_SECONDS))
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                while True:
+                    try:
+                        await client.get(settings.FRONTEND_URL)
+                    except Exception:
+                        pass
+                    await asyncio.sleep(interval)
+
+        ping_task = asyncio.create_task(ping_frontend_loop())
+
     yield
-    
+
     # Shutdown
-    logger.info("Shutting down Knowledge Base RAG API")
+    if ping_task:
+        ping_task.cancel()
+        try:
+            await ping_task
+        except asyncio.CancelledError:
+            pass
     cleanup_connections()
 
 

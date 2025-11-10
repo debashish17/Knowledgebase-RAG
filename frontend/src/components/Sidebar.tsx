@@ -296,7 +296,7 @@ export const Sidebar = ({
             <div className="p-4 border-t border-white/10">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">
-                  Knowledge Base RAG System
+                  AI Study Buddy
                 </p>
                 
                 {/* Settings Menu */}

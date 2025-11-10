@@ -1,18 +1,3 @@
-// Utility to add a completed quiz todo from outside
-export function addCompletedQuizTodo(topic: string, date: string) {
-  const saved = localStorage.getItem("todos");
-  const todos: TodoItem[] = saved ? JSON.parse(saved) : [];
-  todos.push({
-    id: `quiz-${Date.now()}`,
-    title: `Completed quiz on ${topic}`,
-    date,
-    completed: true,
-    priority: "medium",
-    category: "Quiz"
-  });
-  localStorage.setItem("todos", JSON.stringify(todos));
-  window.dispatchEvent(new Event("quiz-todo-added"));
-}
 import { useState } from "react";
 import { useTodoContext } from "../context/TodoContext";
 import { useNavigate } from "react-router-dom";
@@ -192,7 +177,7 @@ const CalendarTodo = () => {
                   placeholder="Task title..."
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  onKeyPress={e => e.key === 'Enter' && addTodo()}
+                  onKeyPress={e => e.key === 'Enter' && handleAddTodo()}
                   className="w-full px-4 py-3 bg-background/70 border border-blue-400/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400/60 focus:shadow-lg focus:shadow-blue-500/20 transition-all"
                 />
                 
@@ -201,6 +186,8 @@ const CalendarTodo = () => {
                   value={date}
                   onChange={e => setDate(e.target.value)}
                   className="w-full px-4 py-3 bg-background/70 border border-blue-400/30 rounded-xl text-white focus:outline-none focus:border-blue-400/60 focus:shadow-lg focus:shadow-blue-500/20 transition-all"
+                  title="Select date"
+                  placeholder="Select date"
                 />
                 
                 <div className="grid grid-cols-2 gap-3">
@@ -208,6 +195,7 @@ const CalendarTodo = () => {
                     value={category}
                     onChange={e => setCategory(e.target.value)}
                     className="px-3 py-2 bg-background/70 border border-purple-400/30 rounded-xl text-white text-sm focus:outline-none focus:border-purple-400/60 transition-all"
+                    title="Select category"
                   >
                     <option value="Study">📚 Study</option>
                     <option value="Assignment">📝 Assignment</option>
@@ -220,6 +208,7 @@ const CalendarTodo = () => {
                     value={priority}
                     onChange={e => setPriority(e.target.value as "low" | "medium" | "high")}
                     className="px-3 py-2 bg-background/70 border border-purple-400/30 rounded-xl text-white text-sm focus:outline-none focus:border-purple-400/60 transition-all"
+                    title="Select priority"
                   >
                     <option value="low">🟢 Low</option>
                     <option value="medium">🟡 Medium</option>
