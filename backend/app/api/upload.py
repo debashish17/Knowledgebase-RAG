@@ -4,7 +4,10 @@ from typing import List, Dict, Any
 import sys
 import os
 import tempfile
+import logging
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 # Add parent directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -37,13 +40,14 @@ async def upload_file(
 ) -> UploadResponse:
     """Upload and process a document file"""
     try:
+        logger.info(f"Upload request received: filename={file.filename}, content_type={file.content_type}, collection={collection}")
         # Validate file type
-        allowed_extensions = {'.pdf', '.txt', '.md'}
+        allowed_extensions = {'.pdf', '.txt', '.md', '.docx'}
         file_extension = Path(file.filename).suffix.lower()
-        
+
         if file_extension not in allowed_extensions:
             raise HTTPException(
-                status_code=400, 
+                status_code=400,
                 detail=f"Unsupported file type: {file_extension}. Allowed: {', '.join(allowed_extensions)}"
             )
         
@@ -55,11 +59,13 @@ async def upload_file(
         
         try:
             # Process the file
+            logger.info(f"Processing document: {temp_file_path}")
             chunks = ingestion_service.process_document(temp_file_path)
-            
+            logger.info(f"Chunks created: {len(chunks) if chunks else 0}")
+
             if not chunks:
                 raise HTTPException(status_code=400, detail="No content could be extracted from the file")
-            
+
             # Generate embeddings and add metadata
             texts = [chunk["text"] for chunk in chunks]
             metadatas = []
@@ -70,8 +76,10 @@ async def upload_file(
                     "upload_collection": collection
                 })
                 metadatas.append(metadata)
-            
+
+            logger.info(f"Generating embeddings for {len(texts)} chunks")
             embeddings = embedding_service.embed_texts(texts, input_type="passage")
+            logger.info(f"Embeddings generated: {len(embeddings)}")
             
             # Store in vector database
             vector_store = VectorStore(collection)
@@ -103,6 +111,7 @@ async def upload_file(
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception(f"Upload failed with unexpected error: {e}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 class MultiUploadResponse(BaseModel):

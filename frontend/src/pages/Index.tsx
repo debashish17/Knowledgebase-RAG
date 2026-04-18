@@ -16,6 +16,7 @@ const Index = () => {
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
   const [chats, setChats] = useState<ChatItem[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [hasDocument, setHasDocument] = useState(false);
   const chatAreaRef = useRef<ChatAreaRef>(null);
   const { toast } = useToast();
 
@@ -108,13 +109,18 @@ const Index = () => {
         
         // Update selectedCollection with the actual collection name from backend
         setSelectedCollection(data.collection);
-        
+
+        setHasDocument(true);
+
+        // Update sidebar title with the LLM-generated title from upload
+        if (data.suggested_title && conversationId) {
+          await handleTitleUpdate(conversationId, data.suggested_title);
+        }
+
         toast({
           title: "Upload Successful",
           description: `${data.filename} uploaded with ${data.chunks_created} chunks`,
         });
-        
-        // Title will be generated when user asks the first question
       } else {
         const formData = new FormData();
         Array.from(uploadFiles).forEach(file => formData.append('files', file));
@@ -132,9 +138,9 @@ const Index = () => {
 
         const data = await response.json();
         
-        // Update selectedCollection with the collection name used
         setSelectedCollection(collectionName);
-        
+        setHasDocument(true);
+
         toast({
           title: "Batch Upload Complete",
           description: `${data.successful}/${data.total_files} files uploaded successfully`,
@@ -166,6 +172,7 @@ const Index = () => {
       console.log('Found chat:', chat);
       setSelectedCollection(chat.collection);
       setConversationId(chat.id);
+      setHasDocument(false); // will be re-evaluated if chat has docs
       console.log('Updated conversationId to:', chat.id);
     } else {
       console.error('Chat not found:', chatId);
@@ -282,10 +289,11 @@ const Index = () => {
 
       {/* Chat Area */}
       <div className="flex-1 overflow-hidden">
-        <ChatArea 
+        <ChatArea
           ref={chatAreaRef}
           selectedCollection={selectedCollection}
           conversationId={conversationId}
+          hasDocument={hasDocument}
           onUploadFiles={handleFileUpload}
           onTitleUpdate={handleTitleUpdate}
         />

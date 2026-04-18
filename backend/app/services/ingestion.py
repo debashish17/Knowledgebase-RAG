@@ -1,4 +1,5 @@
 import PyPDF2
+import docx
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from typing import List, Dict, Any, Optional
 import logging
@@ -140,9 +141,12 @@ class EnhancedIngestionService:
         """Process a document and return enhanced chunks."""
         if file_path.endswith('.pdf'):
             text = self.extract_text_from_pdf(file_path)
-        elif file_path.endswith('.txt'):
+        elif file_path.endswith('.txt') or file_path.endswith('.md'):
             with open(file_path, 'r', encoding='utf-8') as f:
                 text = f.read()
+        elif file_path.endswith('.docx'):
+            doc = docx.Document(file_path)
+            text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
         else:
             raise ValueError(f"Unsupported file type: {file_path}")
         

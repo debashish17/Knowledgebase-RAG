@@ -9,7 +9,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = None
-    GEMINI_API_URL: str = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+    GEMINI_API_URL: str = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
     LLM_PROVIDER: str = "gemini"
     ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "INFO"
@@ -19,9 +19,9 @@ class Settings(BaseSettings):
 
     NVIDIA_EMBEDDINGS_API_KEY: Optional[str] = None
     NVIDIA_LLM_ENDPOINT: str = "https://integrate.api.nvidia.com/v1"
-    NVIDIA_EMBED_MODEL_EN: str = "nvidia/nv-embedqa-e5-v5"
+    NVIDIA_EMBED_MODEL_EN: str = "nvidia/llama-nemotron-embed-vl-1b-v2"
     NVIDIA_EMBED_MODEL_MULTI: str = "nvidia/nv-embedqa-mistral-7b-v2"
-    NVIDIA_RERANK_MODEL: Optional[str] = "nvidia/nv-rerankqa-mistral-4b-v3"
+    NVIDIA_RERANK_MODEL: Optional[str] = None
 
     # Chroma Cloud Configuration
     CHROMA_API_KEY: Optional[str] = None

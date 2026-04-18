@@ -24,7 +24,7 @@ class EmbeddingService:
             logger.info("Initializing NVIDIA embedding client")
             self.nvidia_client = OpenAI(
                 api_key=api_key,
-                base_url=settings.nvidia_base_url
+                base_url=settings.NVIDIA_LLM_ENDPOINT
             )
             logger.info("NVIDIA embedding client initialized successfully")
             
@@ -55,9 +55,9 @@ class EmbeddingService:
             
             response = self.nvidia_client.embeddings.create(
                 input=texts,
-                model=settings.nvidia_embedding_model,
+                model=settings.NVIDIA_EMBED_MODEL_EN,
                 encoding_format="float",
-                extra_body={"input_type": input_type, "truncate": "NONE"}
+                extra_body={"input_type": input_type}
             )
             
             embeddings = [data.embedding for data in response.data]
@@ -76,7 +76,7 @@ class EmbeddingService:
         """Get information about the current embedding provider."""
         return {
             "provider": "nvidia",
-            "model": settings.nvidia_embedding_model,
+            "model": settings.NVIDIA_EMBED_MODEL_EN,
             "dimension": self.get_dimension(),
             "api_available": self.nvidia_client is not None
         }

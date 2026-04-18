@@ -1,4 +1,7 @@
+import logging
 from fastapi import APIRouter, HTTPException
+
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 import sys
@@ -176,6 +179,7 @@ async def ask_question(request: AskRequest) -> AskResponse:
             })
         
         # 5. Save to MongoDB if conversation_id is provided
+        logger.info(f"conversation_id received: {request.conversation_id}, mongo connected: {mongodb_service.is_connected()}")
         if request.conversation_id and mongodb_service.is_connected():
             # Check if this is the first question (conversation has no messages yet)
             is_first_question = mongodb_service.get_message_count(request.conversation_id) == 0

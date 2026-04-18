@@ -18,14 +18,14 @@ class VectorStore:
     def get_all_documents(self, limit: int = 300) -> list:
         """Retrieve all documents from the ChromaDB collection (up to limit)."""
         try:
-            results = self.collection.peek(limit=limit)
+            results = self.collection.get(limit=limit, include=["documents", "metadatas"])
             docs = []
-            for doc, metadata, doc_id in zip(
-                results.get("documents", []),
-                results.get("metadatas", []),
-                results.get("ids", [])
-            ):
-                docs.append({"text": doc, "metadata": metadata, "id": doc_id})
+            documents = results.get("documents") or []
+            metadatas = results.get("metadatas") or []
+            ids = results.get("ids") or []
+            for doc, metadata, doc_id in zip(documents, metadatas, ids):
+                if doc:
+                    docs.append({"text": doc, "metadata": metadata, "id": doc_id})
             return docs
         except Exception as e:
             logger.error(f"Failed to retrieve all documents: {e}")
@@ -65,24 +65,11 @@ class VectorStore:
             try:
                 existing_collection = self.client.get_collection(name=self.collection_name)
 
-                # Try peeking to verify dimension
-                sample = existing_collection.peek(limit=1)
-                if sample and sample.get('embeddings') and len(sample['embeddings']) > 0:
-                    existing_dimension = len(sample['embeddings'][0])
-                    if existing_dimension != expected_dimension:
-                        logger.warning(
-                            f"Collection '{self.collection_name}' has dimension {existing_dimension}, "
-                            f"expected {expected_dimension}. Recreating collection."
-                        )
-                        self.client.delete_collection(name=self.collection_name)
-                    else:
-                        self.collection = existing_collection
-                        logger.info(f"Reusing existing collection '{self.collection_name}'")
-                        return
-                else:
-                    logger.info(f"Collection '{self.collection_name}' found but empty, reusing it.")
-                    self.collection = existing_collection
-                    return
+                # Use count to check if collection has documents; skip dimension check
+                doc_count = existing_collection.count()
+                logger.info(f"Collection '{self.collection_name}' exists with {doc_count} documents, reusing it.")
+                self.collection = existing_collection
+                return
 
             except Exception as e:
                 logger.info(f"Collection '{self.collection_name}' not found or invalid: {e}")

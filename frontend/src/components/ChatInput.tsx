@@ -1,5 +1,6 @@
-import { useState, useRef, forwardRef, useImperativeHandle } from "react";
-import { Send, Paperclip } from "lucide-react";
+import { useState, useRef, forwardRef, useImperativeHandle, useEffect } from "react";
+import { Send, Paperclip, Loader2, Plus, FileText, Link2, ClipboardList } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,10 +13,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+type StudyAction = 'summarize' | 'study-links' | 'quiz';
+
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
-  onUploadFiles?: (files: FileList, collectionName: string) => void;
+  onUploadFiles?: (files: FileList, collectionName: string) => Promise<void>;
   selectedCollection?: string | null;
+  hasDocument?: boolean;
+  onStudyAction?: (action: StudyAction) => void;
 }
 
 export interface ChatInputRef {
@@ -23,11 +28,26 @@ export interface ChatInputRef {
 }
 
 export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
-  ({ onSendMessage, onUploadFiles, selectedCollection }, ref) => {
+  ({ onSendMessage, onUploadFiles, selectedCollection, hasDocument, onStudyAction }, ref) => {
     const [message, setMessage] = useState("");
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileList | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [showActions, setShowActions] = useState(false);
+    const actionsRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { toast } = useToast();
+
+    // Close popover when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (actionsRef.current && !actionsRef.current.contains(e.target as Node)) {
+          setShowActions(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Expose method to open upload dialog
     useImperativeHandle(ref, () => ({
@@ -48,13 +68,17 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
       setIsUploadOpen(true);
     };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (uploadFiles && onUploadFiles) {
-      // Use existing collection or auto-generate new one
       const collectionName = selectedCollection || `chat_${Date.now()}`;
-      onUploadFiles(uploadFiles, collectionName);
-      setIsUploadOpen(false);
-      setUploadFiles(null);
+      setIsUploading(true);
+      try {
+        await onUploadFiles(uploadFiles, collectionName);
+        setIsUploadOpen(false);
+        setUploadFiles(null);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -63,6 +87,51 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
       <div className="sticky bottom-0 p-4 bg-background/80 backdrop-blur-glass border-t border-white/10">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
           <div className="relative flex items-center gap-2 bg-glass backdrop-blur-glass border border-white/20 rounded-2xl p-2 shadow-glass hover:border-white/30 transition-all group">
+
+            {/* + Actions button with popover */}
+            <div ref={actionsRef} className="relative">
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => setShowActions(prev => !prev)}
+                className={cn(
+                  "rounded-xl text-muted-foreground hover:text-foreground hover:bg-glass-light transition-all",
+                  showActions && "text-foreground bg-glass-light"
+                )}
+                title="Study actions"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+
+              {showActions && (
+                <div className="absolute bottom-12 left-0 z-50 w-52 flex flex-col gap-1 p-2 rounded-xl bg-[#1a1a2e]/95 backdrop-blur-xl border border-white/20 shadow-2xl">
+                  {[
+                    { action: 'summarize' as StudyAction, label: 'Summarize', icon: FileText },
+                    { action: 'study-links' as StudyAction, label: 'Get Study Links', icon: Link2 },
+                    { action: 'quiz' as StudyAction, label: 'Generate Quiz', icon: ClipboardList },
+                  ].map(({ action, label, icon: Icon }) => (
+                    <button
+                      key={action}
+                      type="button"
+                      onClick={() => {
+                        setShowActions(false);
+                        if (!hasDocument) {
+                          toast({ title: "No document uploaded", description: "Please upload a document before using study tools.", variant: "destructive" });
+                          return;
+                        }
+                        onStudyAction?.(action);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all text-left"
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0 text-primary" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Button
               type="button"
               size="icon"
@@ -73,6 +142,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
             >
               <Paperclip className="h-4 w-4" />
             </Button>
+
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -96,7 +166,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
             </Button>
           </div>
           <p className="text-xs text-muted-foreground text-center mt-2">
-            Press Enter to send • Click 📎 to upload documents
+            Press Enter to send • Click 📎 to upload • Click + for study tools
           </p>
         </form>
       </div>
@@ -130,12 +200,19 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
                 Files will be added to your current chat's knowledge base
               </p>
             </div>
-            <Button 
-              onClick={handleUpload} 
-              disabled={!uploadFiles}
+            <Button
+              onClick={handleUpload}
+              disabled={!uploadFiles || isUploading}
               className="w-full"
             >
-              Upload {uploadFiles && uploadFiles.length > 1 ? `${uploadFiles.length} Files` : 'File'}
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                `Upload ${uploadFiles && uploadFiles.length > 1 ? `${uploadFiles.length} Files` : 'File'}`
+              )}
             </Button>
           </div>
         </DialogContent>
